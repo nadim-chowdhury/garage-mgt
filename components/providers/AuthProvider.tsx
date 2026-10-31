@@ -50,6 +50,21 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     router.push('/login');
   }, [logoutMutation, router]);
 
+  const value: AuthContextValue | null = useMemo(() => {
+    if (!session) return null;
+    return {
+      userId: session.userId,
+      garageId: session.garageId,
+      garageName: session.garageName,
+      userName: session.name,
+      role: session.role,
+      isAdmin: session.role === 'admin',
+      isViewer: session.role === 'viewer',
+      canWrite: session.role !== 'viewer',
+      logout,
+    };
+  }, [session, logout]);
+
   // Loading state
   if (isLoading) {
     return (
@@ -64,25 +79,10 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
   // Not authenticated — redirect handled by proxy,
   // but if session expired mid-use, redirect here
-  if (isError || !session) {
+  if (isError || !value) {
     router.push('/login');
     return null;
   }
-
-  const value: AuthContextValue = useMemo(
-    () => ({
-      userId: session.userId,
-      garageId: session.garageId,
-      garageName: session.garageName,
-      userName: session.name,
-      role: session.role,
-      isAdmin: session.role === 'admin',
-      isViewer: session.role === 'viewer',
-      canWrite: session.role !== 'viewer',
-      logout,
-    }),
-    [session, logout],
-  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
