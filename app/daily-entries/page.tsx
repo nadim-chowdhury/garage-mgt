@@ -24,7 +24,7 @@ import { useAuth } from '@/components/providers/AuthProvider';
 import type { Column } from '@/components/ui/Table';
 import type { DailyVehicleEntry, CreateDailyEntryInput, UpdateDailyEntryInput } from '@/types';
 import { formatCurrency, getVehicleTypeLabel, getPaymentMethodLabel } from '@/lib/utils';
-import { Car, Pencil, Trash2, RotateCcw } from 'lucide-react';
+import { Car, Pencil, Trash2, RotateCcw, Calendar } from 'lucide-react';
 
 const vehicleTypeOptions = [
   { value: 'car', label: 'Car' },
@@ -247,8 +247,9 @@ export default function DailyEntriesPage() {
         {canWrite && <Button onClick={() => setShowModal(true)}>+ New Entry</Button>}
       </div>
 
-      <div className="flex items-end gap-3">
-        <div className="sm:w-52">
+      {/* Filters */}
+      <div className="flex flex-wrap items-end gap-3">
+        <div className="w-44 sm:w-52">
           <DatePicker
             label="Date"
             value={date}
@@ -258,14 +259,14 @@ export default function DailyEntriesPage() {
             }}
           />
         </div>
-        {date && (
-          <div className="space-y-1.5">
-            <span
-              className="block text-sm font-medium text-transparent select-none pointer-events-none"
-              aria-hidden="true"
-            >
-              &nbsp;
-            </span>
+        <div className="space-y-1.5">
+          <span
+            className="block text-sm font-medium text-transparent select-none pointer-events-none"
+            aria-hidden="true"
+          >
+            &nbsp;
+          </span>
+          {date ? (
             <button
               type="button"
               onClick={() => {
@@ -277,8 +278,20 @@ export default function DailyEntriesPage() {
               <RotateCcw className="h-4 w-4 mr-1.5 text-slate-400" />
               Show All
             </button>
-          </div>
-        )}
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                setDate(today);
+                setPage(1);
+              }}
+              className="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-0 focus:border-indigo-500 focus:ring-indigo-500/20 cursor-pointer"
+            >
+              <Calendar className="h-4 w-4 mr-1.5 text-indigo-500" />
+              Today
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
