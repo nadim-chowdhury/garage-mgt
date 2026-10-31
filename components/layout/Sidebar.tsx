@@ -131,7 +131,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
 
       {/* Footer */}
       <div className="border-t border-slate-200 px-5 py-3">
-        <p className="text-[11px] text-slate-400">v0.2.0 • Garage MGT</p>
+        <p className="text-[11px] text-slate-400">v0.3.0 • Garage MGT</p>
       </div>
     </aside>
   );
