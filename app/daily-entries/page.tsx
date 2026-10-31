@@ -24,7 +24,7 @@ import { useAuth } from '@/components/providers/AuthProvider';
 import type { Column } from '@/components/ui/Table';
 import type { DailyVehicleEntry, CreateDailyEntryInput, UpdateDailyEntryInput } from '@/types';
 import { formatCurrency, getVehicleTypeLabel, getPaymentMethodLabel } from '@/lib/utils';
-import { Car, Pencil, Trash2 } from 'lucide-react';
+import { Car, Pencil, Trash2, RotateCcw } from 'lucide-react';
 
 const vehicleTypeOptions = [
   { value: 'car', label: 'Car' },
@@ -260,14 +260,15 @@ export default function DailyEntriesPage() {
         </div>
         {date && (
           <Button
-            variant="ghost"
-            size="sm"
+            type="button"
+            variant="secondary"
             onClick={() => {
               setDate('');
               setPage(1);
             }}
-            className="text-xs text-slate-500 hover:text-slate-800 mb-1"
+            className="h-[38px] border-slate-300 text-slate-700 hover:bg-slate-50 shadow-sm font-medium"
           >
+            <RotateCcw className="h-4 w-4 mr-1.5 text-slate-400" />
             Show All
           </Button>
         )}

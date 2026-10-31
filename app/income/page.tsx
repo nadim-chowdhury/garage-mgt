@@ -31,7 +31,7 @@ import {
   getPaymentMethodLabel,
   generateReceiptNumber,
 } from '@/lib/utils';
-import { Wallet, Pencil, Trash2 } from 'lucide-react';
+import { Wallet, Pencil, Trash2, RotateCcw } from 'lucide-react';
 
 const categoryOptions = [
   { value: 'monthly_rent', label: 'Monthly Rent' },
@@ -291,16 +291,17 @@ export default function IncomePage() {
         </div>
         {(startDate || endDate || categoryFilter) && (
           <Button
-            variant="ghost"
-            size="sm"
+            type="button"
+            variant="secondary"
             onClick={() => {
               setStartDate('');
               setEndDate('');
               setCategoryFilter('');
               setPage(1);
             }}
-            className="text-xs text-slate-500 hover:text-slate-800 mb-1"
+            className="h-[38px] border-slate-300 text-slate-700 hover:bg-slate-50 shadow-sm font-medium"
           >
+            <RotateCcw className="h-4 w-4 mr-1.5 text-slate-400" />
             Show All
           </Button>
         )}
