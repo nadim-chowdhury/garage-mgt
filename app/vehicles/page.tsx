@@ -14,6 +14,7 @@ import {
   Badge,
   Table,
   Pagination,
+  FilterPills,
   Modal,
   SearchInput,
   ConfirmDialog,
@@ -24,7 +25,7 @@ import type { Column } from '@/components/ui/Table';
 import type { Vehicle, CreateVehicleInput } from '@/types';
 import { getVehicleTypeLabel } from '@/lib/utils';
 import VehicleForm from '@/components/forms/VehicleForm';
-import { Car, CheckCircle, Pencil, Power, Trash2 } from 'lucide-react';
+import { Car, Pencil, Trash2 } from 'lucide-react';
 
 interface VehicleRow extends Vehicle {
   tenantName?: string;
@@ -34,6 +35,7 @@ export default function VehiclesPage() {
   const router = useRouter();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState<VehicleRow | null>(null);
   const [vehicleToDelete, setVehicleToDelete] = useState<VehicleRow | null>(null);
@@ -45,6 +47,7 @@ export default function VehiclesPage() {
     page,
     limit: 20,
     search: search || undefined,
+    status: statusFilter || undefined,
   });
   const { data: tenantsRes } = useGetTenantsQuery({ limit: 100 });
   const [createVehicle, { isLoading: isCreating }] = useCreateVehicleMutation();
@@ -80,18 +83,6 @@ export default function VehiclesPage() {
       }
     } catch {
       showError('Failed to update vehicle');
-    }
-  }
-
-  async function handleToggleStatus(target: VehicleRow) {
-    const nextStatus = target.status === 'active' ? 'inactive' : 'active';
-    try {
-      await updateVehicle({ id: target.id, status: nextStatus }).unwrap();
-      success(
-        `Vehicle ${target.vehicleNumber} ${nextStatus === 'active' ? 'activated' : 'deactivated'} successfully`,
-      );
-    } catch {
-      showError('Failed to update vehicle status');
     }
   }
 
@@ -141,26 +132,9 @@ export default function VehiclesPage() {
       key: 'status',
       header: 'Status',
       render: (row) => (
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            if (canWrite) {
-              handleToggleStatus(row);
-            }
-          }}
-          disabled={!canWrite}
-          title={
-            canWrite
-              ? `Click to ${row.status === 'active' ? 'deactivate' : 'activate'}`
-              : undefined
-          }
-          className={canWrite ? 'group cursor-pointer' : 'cursor-default'}
-        >
-          <Badge variant={row.status === 'active' ? 'success' : 'neutral'}>
-            {row.status === 'active' ? 'Active' : 'Inactive'}
-          </Badge>
-        </button>
+        <Badge variant={row.status === 'active' ? 'success' : 'neutral'}>
+          {row.status === 'active' ? 'Active' : 'Inactive'}
+        </Badge>
       ),
     },
     ...(canWrite
@@ -173,26 +147,6 @@ export default function VehiclesPage() {
                 className="flex items-center gap-1.5"
                 onClick={(e) => e.stopPropagation()}
               >
-                <button
-                  type="button"
-                  onClick={() => handleToggleStatus(r)}
-                  className={`rounded-lg p-1.5 transition-colors ${
-                    r.status === 'active'
-                      ? 'text-slate-400 hover:bg-amber-50 hover:text-amber-600'
-                      : 'text-slate-400 hover:bg-emerald-50 hover:text-emerald-600'
-                  }`}
-                  title={
-                    r.status === 'active'
-                      ? 'Deactivate vehicle'
-                      : 'Activate vehicle'
-                  }
-                >
-                  {r.status === 'active' ? (
-                    <Power className="h-4 w-4" />
-                  ) : (
-                    <CheckCircle className="h-4 w-4" />
-                  )}
-                </button>
                 <button
                   type="button"
                   onClick={() => setEditingVehicle(r)}
@@ -228,15 +182,32 @@ export default function VehiclesPage() {
         {canWrite && <Button onClick={() => setShowAddModal(true)}>+ Add Vehicle</Button>}
       </div>
 
-      <div className="sm:w-80">
-        <SearchInput
-          placeholder="Search by number, owner, driver..."
-          value={search}
-          onChange={(val) => {
-            setSearch(val);
-            setPage(1);
-          }}
-        />
+      {/* Filters */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="sm:w-80">
+          <SearchInput
+            placeholder="Search by number, owner, driver..."
+            value={search}
+            onChange={(val) => {
+              setSearch(val);
+              setPage(1);
+            }}
+          />
+        </div>
+        <div className="flex gap-2">
+          <FilterPills
+            options={[
+              { value: '', label: 'All' },
+              { value: 'active', label: 'Active' },
+              { value: 'inactive', label: 'Inactive' },
+            ]}
+            value={statusFilter}
+            onChange={(v) => {
+              setStatusFilter(v);
+              setPage(1);
+            }}
+          />
+        </div>
       </div>
 
       <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">

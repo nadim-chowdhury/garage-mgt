@@ -2,17 +2,15 @@
 
 import { use } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import {
   useGetVehicleByIdQuery,
   useUpdateVehicleMutation,
 } from '@/store/api/vehicleApi';
 import { useGetTenantsQuery } from '@/store/api/tenantApi';
 import VehicleForm from '@/components/forms/VehicleForm';
-import { Button, Card, LoadingSpinner } from '@/components/ui';
+import { Card, LoadingSpinner } from '@/components/ui';
 import { useToast } from '@/components/ui/Toast';
 import type { CreateVehicleInput } from '@/types';
-import { ArrowLeft } from 'lucide-react';
 
 export default function EditVehiclePage(props: PageProps<'/vehicles/[id]/edit'>) {
   return <EditVehicleContent paramsPromise={props.params} />;
@@ -64,18 +62,11 @@ function EditVehicleContent({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Link href={`/vehicles/${id}`}>
-          <Button variant="ghost" size="sm">
-            <ArrowLeft className="h-4 w-4 mr-1" /> Back
-          </Button>
-        </Link>
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Edit Vehicle</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            {vehicle.vehicleNumber} — তথ্য সম্পাদনা করুন
-          </p>
-        </div>
+      <div>
+        <h1 className="text-2xl font-bold text-slate-900">Edit Vehicle</h1>
+        <p className="mt-1 text-sm text-slate-500">
+          {vehicle.vehicleNumber} — তথ্য সম্পাদনা করুন
+        </p>
       </div>
 
       <Card>
@@ -90,4 +81,3 @@ function EditVehicleContent({
     </div>
   );
 }
-
