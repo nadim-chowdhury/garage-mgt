@@ -21,7 +21,7 @@ interface LoadingSpinnerProps {
 export default function LoadingSpinner({
   size = 'md',
   className,
-  text = 'Loading...',
+  text = '',
 }: LoadingSpinnerProps) {
   return (
     <div className="flex flex-col items-center justify-center text-center p-2" role="status">

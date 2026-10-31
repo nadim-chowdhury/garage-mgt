@@ -259,18 +259,25 @@ export default function DailyEntriesPage() {
           />
         </div>
         {date && (
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => {
-              setDate('');
-              setPage(1);
-            }}
-            className="h-[38px] border-slate-300 text-slate-700 hover:bg-slate-50 shadow-sm font-medium"
-          >
-            <RotateCcw className="h-4 w-4 mr-1.5 text-slate-400" />
-            Show All
-          </Button>
+          <div className="space-y-1.5">
+            <span
+              className="block text-sm font-medium text-transparent select-none pointer-events-none"
+              aria-hidden="true"
+            >
+              &nbsp;
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                setDate('');
+                setPage(1);
+              }}
+              className="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-0 focus:border-indigo-500 focus:ring-indigo-500/20 cursor-pointer"
+            >
+              <RotateCcw className="h-4 w-4 mr-1.5 text-slate-400" />
+              Show All
+            </button>
+          </div>
         )}
       </div>
 
