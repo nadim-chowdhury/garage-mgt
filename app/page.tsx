@@ -20,7 +20,7 @@ export default function DashboardPage() {
   const { canWrite } = useAuth();
 
   const { data: statsRes, isLoading: statsLoading } = useGetDashboardStatsQuery();
-  const { data: entriesRes } = useGetDailyEntriesQuery({ limit: 8, date: today });
+  const { data: entriesRes } = useGetDailyEntriesQuery({ limit: 8 });
   const { data: overdueRes } = useGetRentPaymentsQuery({ limit: 8, status: 'overdue' });
 
   const stats = statsRes?.data;
@@ -84,7 +84,7 @@ export default function DashboardPage() {
       {/* Recent entries & overdue rents */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Card title="Recent Daily Entries" noPadding>
-          <Table columns={entryColumns} data={recentEntries} emptyMessage="No entries yet today" emptyIcon={<Car className="h-6 w-6" />} keyExtractor={(r) => r.id} />
+          <Table columns={entryColumns} data={recentEntries} emptyMessage="No entries yet" emptyIcon={<Car className="h-6 w-6" />} keyExtractor={(r) => r.id} />
         </Card>
 
         <Card title="Overdue Rents" noPadding>

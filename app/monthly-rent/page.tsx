@@ -68,8 +68,8 @@ export default function MonthlyRentPage() {
   const { data, isLoading } = useGetRentPaymentsQuery({
     page,
     limit: 20,
-    month: filterMonth,
-    year: filterYear,
+    month: filterMonth || undefined,
+    year: filterYear || undefined,
     status: statusFilter || undefined,
   });
   const { data: tenantsRes } = useGetTenantsQuery({ limit: 100 });
@@ -265,7 +265,7 @@ export default function MonthlyRentPage() {
         <div className="w-40">
           <Select
             label="Month"
-            options={monthOptions}
+            options={[{ value: '', label: 'All Months' }, ...monthOptions]}
             value={filterMonth}
             onChange={(e) => {
               setFilterMonth(e.target.value);

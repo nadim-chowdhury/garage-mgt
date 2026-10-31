@@ -57,8 +57,8 @@ export default function ExpensesPage() {
   const { data, isLoading } = useGetExpenseEntriesQuery({
     page,
     limit: 20,
-    startDate,
-    endDate,
+    startDate: startDate || undefined,
+    endDate: endDate || undefined,
     category: categoryFilter || undefined,
   });
   const [createExpense, { isLoading: isCreating }] = useCreateExpenseMutation();
@@ -270,6 +270,21 @@ export default function ExpensesPage() {
             }}
           />
         </div>
+        {(startDate || endDate || categoryFilter) && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setStartDate('');
+              setEndDate('');
+              setCategoryFilter('');
+              setPage(1);
+            }}
+            className="text-xs text-slate-500 hover:text-slate-800 mb-1"
+          >
+            Show All
+          </Button>
+        )}
       </div>
 
       <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">

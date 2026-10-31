@@ -54,7 +54,11 @@ export default function DailyEntriesPage() {
   const { success, error: showError } = useToast();
   const { canWrite, isAdmin } = useAuth();
 
-  const { data, isLoading } = useGetDailyEntriesQuery({ page, limit: 20, date });
+  const { data, isLoading } = useGetDailyEntriesQuery({
+    page,
+    limit: 20,
+    date: date || undefined,
+  });
   const [createEntry, { isLoading: isCreating }] = useCreateDailyEntryMutation();
   const [updateEntry, { isLoading: isUpdating }] = useUpdateDailyEntryMutation();
   const [deleteEntry, { isLoading: isDeleting }] = useDeleteDailyEntryMutation();
@@ -243,15 +247,30 @@ export default function DailyEntriesPage() {
         {canWrite && <Button onClick={() => setShowModal(true)}>+ New Entry</Button>}
       </div>
 
-      <div className="sm:w-48">
-        <DatePicker
-          label="Date"
-          value={date}
-          onChange={(e) => {
-            setDate(e.target.value);
-            setPage(1);
-          }}
-        />
+      <div className="flex items-end gap-3">
+        <div className="sm:w-52">
+          <DatePicker
+            label="Date"
+            value={date}
+            onChange={(e) => {
+              setDate(e.target.value);
+              setPage(1);
+            }}
+          />
+        </div>
+        {date && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setDate('');
+              setPage(1);
+            }}
+            className="text-xs text-slate-500 hover:text-slate-800 mb-1"
+          >
+            Show All
+          </Button>
+        )}
       </div>
 
       <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
@@ -259,7 +278,7 @@ export default function DailyEntriesPage() {
           columns={columns}
           data={entries}
           loading={isLoading}
-          emptyMessage="No entries for this date"
+          emptyMessage={date ? 'No entries for this date' : 'No entries recorded yet'}
           emptyIcon={<Car className="h-6 w-6" />}
           keyExtractor={(r) => r.id}
         />

@@ -67,8 +67,8 @@ export default function IncomePage() {
   const { data, isLoading } = useGetIncomeEntriesQuery({
     page,
     limit: 20,
-    startDate,
-    endDate,
+    startDate: startDate || undefined,
+    endDate: endDate || undefined,
     category: categoryFilter || undefined,
   });
   const { data: tenantsRes } = useGetTenantsQuery({ limit: 100 });
@@ -289,6 +289,21 @@ export default function IncomePage() {
             }}
           />
         </div>
+        {(startDate || endDate || categoryFilter) && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setStartDate('');
+              setEndDate('');
+              setCategoryFilter('');
+              setPage(1);
+            }}
+            className="text-xs text-slate-500 hover:text-slate-800 mb-1"
+          >
+            Show All
+          </Button>
+        )}
       </div>
 
       <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
