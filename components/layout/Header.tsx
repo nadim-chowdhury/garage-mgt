@@ -70,6 +70,11 @@ export default function Header({
         </button>
       )}
 
+      {/* Role badge */}
+      <Badge variant={roleBadgeVariant[role]} size="sm">
+        {roleLabel[role]}
+      </Badge>
+
       {/* Garage name */}
       <span className={cn('text-sm font-semibold text-slate-700 truncate', !collapsed && 'lg:hidden')}>
         {garageName}
@@ -96,10 +101,6 @@ export default function Header({
             {garageName}
           </span>
         </div>
-
-        <Badge variant={roleBadgeVariant[role]} size="sm">
-          {roleLabel[role]}
-        </Badge>
 
         <button
           onClick={logout}
