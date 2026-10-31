@@ -66,16 +66,42 @@ function TenantDetailContent({
   }
 
   const vehicleColumns: Column<Vehicle>[] = [
-    { key: 'vehicleNumber', header: 'Vehicle No.',
-      render: (r) => <span className="font-medium">{r.vehicleNumber}</span> },
+    {
+      key: 'vehicleNumber',
+      header: 'Vehicle No.',
+      render: (r) => (
+        <Link
+          href={`/vehicles/${r.id}`}
+          className="font-medium text-primary-600 hover:text-primary-800 hover:underline"
+        >
+          {r.vehicleNumber}
+        </Link>
+      ),
+    },
     { key: 'vehicleType', header: 'Type', render: (r) => getVehicleTypeLabel(r.vehicleType) },
     { key: 'ownerName', header: 'Owner', render: (r) => r.ownerName || '—' },
     { key: 'driverName', header: 'Driver', render: (r) => r.driverName || '—' },
-    { key: 'status', header: 'Status',
+    {
+      key: 'status',
+      header: 'Status',
       render: (r) => (
         <Badge variant={r.status === 'active' ? 'success' : 'neutral'}>
           {r.status === 'active' ? 'Active' : 'Inactive'}
         </Badge>
+      ),
+    },
+    {
+      key: 'actions',
+      header: 'Actions',
+      className: 'text-right',
+      render: (r) => (
+        <div className="flex justify-end">
+          <Link href={`/vehicles/${r.id}`}>
+            <Button variant="ghost" size="sm">
+              View / Edit
+            </Button>
+          </Link>
+        </div>
       ),
     },
   ];

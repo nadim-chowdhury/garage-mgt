@@ -24,7 +24,7 @@ import type { Column } from '@/components/ui/Table';
 import type { Vehicle, CreateVehicleInput } from '@/types';
 import { getVehicleTypeLabel } from '@/lib/utils';
 import VehicleForm from '@/components/forms/VehicleForm';
-import { Car, Pencil, Trash2 } from 'lucide-react';
+import { Car, CheckCircle, Pencil, Power, Trash2 } from 'lucide-react';
 
 interface VehicleRow extends Vehicle {
   tenantName?: string;
@@ -83,6 +83,18 @@ export default function VehiclesPage() {
     }
   }
 
+  async function handleToggleStatus(target: VehicleRow) {
+    const nextStatus = target.status === 'active' ? 'inactive' : 'active';
+    try {
+      await updateVehicle({ id: target.id, status: nextStatus }).unwrap();
+      success(
+        `Vehicle ${target.vehicleNumber} ${nextStatus === 'active' ? 'activated' : 'deactivated'} successfully`,
+      );
+    } catch {
+      showError('Failed to update vehicle status');
+    }
+  }
+
   async function handleDelete() {
     if (!vehicleToDelete) return;
     try {
@@ -129,9 +141,26 @@ export default function VehiclesPage() {
       key: 'status',
       header: 'Status',
       render: (row) => (
-        <Badge variant={row.status === 'active' ? 'success' : 'neutral'}>
-          {row.status === 'active' ? 'Active' : 'Inactive'}
-        </Badge>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (canWrite) {
+              handleToggleStatus(row);
+            }
+          }}
+          disabled={!canWrite}
+          title={
+            canWrite
+              ? `Click to ${row.status === 'active' ? 'deactivate' : 'activate'}`
+              : undefined
+          }
+          className={canWrite ? 'group cursor-pointer' : 'cursor-default'}
+        >
+          <Badge variant={row.status === 'active' ? 'success' : 'neutral'}>
+            {row.status === 'active' ? 'Active' : 'Inactive'}
+          </Badge>
+        </button>
       ),
     },
     ...(canWrite
@@ -140,7 +169,30 @@ export default function VehiclesPage() {
             key: 'actions' as keyof VehicleRow,
             header: 'Actions',
             render: (r: VehicleRow) => (
-              <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+              <div
+                className="flex items-center gap-1.5"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  type="button"
+                  onClick={() => handleToggleStatus(r)}
+                  className={`rounded-lg p-1.5 transition-colors ${
+                    r.status === 'active'
+                      ? 'text-slate-400 hover:bg-amber-50 hover:text-amber-600'
+                      : 'text-slate-400 hover:bg-emerald-50 hover:text-emerald-600'
+                  }`}
+                  title={
+                    r.status === 'active'
+                      ? 'Deactivate vehicle'
+                      : 'Activate vehicle'
+                  }
+                >
+                  {r.status === 'active' ? (
+                    <Power className="h-4 w-4" />
+                  ) : (
+                    <CheckCircle className="h-4 w-4" />
+                  )}
+                </button>
                 <button
                   type="button"
                   onClick={() => setEditingVehicle(r)}
@@ -217,6 +269,7 @@ export default function VehiclesPage() {
         <VehicleForm
           tenants={tenants}
           onSubmit={handleCreate}
+          onCancel={() => setShowAddModal(false)}
           loading={isCreating}
         />
       </Modal>
@@ -233,6 +286,7 @@ export default function VehiclesPage() {
             initialData={editingVehicle}
             tenants={tenants}
             onSubmit={handleUpdate}
+            onCancel={() => setEditingVehicle(null)}
             loading={isUpdating}
           />
         )}

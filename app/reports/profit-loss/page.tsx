@@ -7,7 +7,7 @@ import { Card, DatePicker, Table, LoadingSpinner, EmptyState, Button, PrintButto
 import type { Column } from '@/components/ui/Table';
 import { formatCurrency } from '@/lib/utils';
 import { generateCsv, downloadCsv } from '@/lib/csv';
-import { TrendingUp } from 'lucide-react';
+import { TrendingUp, Download } from 'lucide-react';
 
 interface MonthRow {
   month: string;
@@ -71,7 +71,10 @@ export default function ProfitLossPage() {
                 { header: 'Net', accessor: (r) => Number(r.net) },
               ]);
               downloadCsv(csv, `profit-loss-${startDate}-to-${endDate}`);
-            }}>📥 Export CSV</Button>
+            }}>
+              <Download className="h-4 w-4 mr-1.5" />
+              Export CSV
+            </Button>
             <PrintButton />
           </div>
         )}

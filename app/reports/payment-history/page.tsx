@@ -9,7 +9,7 @@ import type { Column } from '@/components/ui/Table';
 import type { IncomeEntry } from '@/types';
 import { formatCurrency, formatDate, getIncomeCategoryLabel, getPaymentMethodLabel } from '@/lib/utils';
 import { generateCsv, downloadCsv } from '@/lib/csv';
-import { CreditCard } from 'lucide-react';
+import { CreditCard, Download } from 'lucide-react';
 
 interface PaymentRow extends IncomeEntry {
   tenantName: string | null;
@@ -84,7 +84,10 @@ export default function PaymentHistoryPage() {
                 { header: 'Receipt', accessor: (r) => r.receiptNumber ?? '' },
               ]);
               downloadCsv(csv, `payment-history-${startDate}-to-${endDate}`);
-            }}>📥 Export CSV</Button>
+            }}>
+              <Download className="h-4 w-4 mr-1.5" />
+              Export CSV
+            </Button>
             <PrintButton />
           </div>
 

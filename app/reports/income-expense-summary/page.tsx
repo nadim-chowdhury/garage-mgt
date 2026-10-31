@@ -8,7 +8,7 @@ import type { Column } from '@/components/ui/Table';
 import { formatCurrency, getIncomeCategoryLabel, getExpenseCategoryLabel } from '@/lib/utils';
 import { generateCsv, downloadCsv } from '@/lib/csv';
 import type { IncomeCategory, ExpenseCategory } from '@/types';
-import { Wallet, CreditCard, PieChart } from 'lucide-react';
+import { Wallet, CreditCard, PieChart, Download } from 'lucide-react';
 
 interface CategoryRow {
   category: string;
@@ -71,7 +71,10 @@ export default function IncomeExpenseSummaryPage() {
                 { header: 'Amount', accessor: (r) => r.total },
               ]);
               downloadCsv(csv, `income-expense-summary-${startDate}-to-${endDate}`);
-            }}>📥 Export CSV</Button>
+            }}>
+              <Download className="h-4 w-4 mr-1.5" />
+              Export CSV
+            </Button>
             <PrintButton />
           </div>
 

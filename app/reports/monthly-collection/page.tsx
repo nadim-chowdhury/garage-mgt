@@ -7,7 +7,7 @@ import { Card, DatePicker, Table, LoadingSpinner, EmptyState, Button, PrintButto
 import type { Column } from '@/components/ui/Table';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { generateCsv, downloadCsv } from '@/lib/csv';
-import { Calendar } from 'lucide-react';
+import { Calendar, Download } from 'lucide-react';
 
 interface DailyRow {
   date: string;
@@ -61,7 +61,10 @@ export default function MonthlyCollectionPage() {
                 { header: 'Collection', accessor: (r) => Number(r.total) },
               ]);
               downloadCsv(csv, `monthly-collection-${startDate}-to-${endDate}`);
-            }}>📥 Export CSV</Button>
+            }}>
+              <Download className="h-4 w-4 mr-1.5" />
+              Export CSV
+            </Button>
             <PrintButton />
           </div>
 

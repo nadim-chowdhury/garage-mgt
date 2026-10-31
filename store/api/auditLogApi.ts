@@ -24,3 +24,4 @@ export const auditLogApi = baseApi.injectEndpoints({
 });
 
 export const { useGetAuditLogsQuery } = auditLogApi;
+

@@ -17,8 +17,8 @@ const vehicleTypeOptions = [
 ];
 
 const statusOptions = [
-  { value: 'active', label: 'Active' },
-  { value: 'inactive', label: 'Inactive' },
+  { value: 'active', label: 'Active (সক্রিয়)' },
+  { value: 'inactive', label: 'Inactive (নিষ্ক্রিয়)' },
 ];
 
 interface VehicleFormProps {
@@ -26,6 +26,7 @@ interface VehicleFormProps {
   tenants: Pick<Tenant, 'id' | 'name' | 'mobile'>[];
   preselectedTenantId?: string;
   onSubmit: (data: CreateVehicleInput) => Promise<void>;
+  onCancel?: () => void;
   loading?: boolean;
 }
 
@@ -34,6 +35,7 @@ export default function VehicleForm({
   tenants,
   preselectedTenantId,
   onSubmit,
+  onCancel,
   loading = false,
 }: VehicleFormProps) {
   const router = useRouter();
@@ -172,7 +174,11 @@ export default function VehicleForm({
       />
 
       <div className="flex items-center justify-end gap-3 border-t border-slate-200 pt-5">
-        <Button type="button" variant="secondary" onClick={() => router.back()}>
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={() => (onCancel ? onCancel() : router.back())}
+        >
           Cancel
         </Button>
         <Button type="submit" loading={loading}>
