@@ -51,7 +51,7 @@ export function withAuth(handler: AuthenticatedHandler) {
     return handler(request, {
       session,
       garageId: session.garageId,
-      role: session.role,
+      role: session.role || 'admin',
       userId: session.userId,
       userName: session.name,
     });
@@ -86,7 +86,7 @@ export function withAuthRoute(handler: AuthenticatedRouteHandler) {
     return handler(request, routeContext, {
       session,
       garageId: session.garageId,
-      role: session.role,
+      role: session.role || 'admin',
       userId: session.userId,
       userName: session.name,
     });

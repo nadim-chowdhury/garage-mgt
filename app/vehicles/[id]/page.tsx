@@ -2,25 +2,22 @@
 
 import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import {
   useGetVehicleByIdQuery,
   useUpdateVehicleMutation,
   useDeleteVehicleMutation,
 } from '@/store/api/vehicleApi';
-import { useGetTenantsQuery } from '@/store/api/tenantApi';
 import {
   Button,
   Badge,
   Card,
-  Modal,
   LoadingSpinner,
   ConfirmDialog,
 } from '@/components/ui';
-import VehicleForm from '@/components/forms/VehicleForm';
 import { useToast } from '@/components/ui/Toast';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { formatDate, getVehicleTypeLabel } from '@/lib/utils';
-import type { CreateVehicleInput } from '@/types';
 import { ArrowLeft, CheckCircle, Pencil, Power, Trash2 } from 'lucide-react';
 
 export default function VehicleDetailPage(props: PageProps<'/vehicles/[id]'>) {
@@ -38,25 +35,12 @@ function VehicleDetailContent({
   const { canWrite, isAdmin } = useAuth();
 
   const { data: res, isLoading } = useGetVehicleByIdQuery(id);
-  const { data: tenantsRes } = useGetTenantsQuery({ limit: 100 });
   const [updateVehicle, { isLoading: isUpdating }] = useUpdateVehicleMutation();
   const [deleteVehicle, { isLoading: isDeleting }] = useDeleteVehicleMutation();
 
-  const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const vehicle = res?.data;
-  const tenants = tenantsRes?.data ?? [];
-
-  async function handleUpdate(formData: CreateVehicleInput) {
-    try {
-      await updateVehicle({ id, ...formData }).unwrap();
-      success('Vehicle updated successfully');
-      setShowEditModal(false);
-    } catch {
-      showError('Failed to update vehicle');
-    }
-  }
 
   async function handleToggleStatus() {
     if (!vehicle) return;
@@ -137,12 +121,11 @@ function VehicleDetailContent({
                   </>
                 )}
               </Button>
-              <Button
-                variant="secondary"
-                onClick={() => setShowEditModal(true)}
-              >
-                <Pencil className="h-4 w-4 mr-1.5" /> Edit
-              </Button>
+              <Link href={`/vehicles/${id}/edit`}>
+                <Button variant="secondary">
+                  <Pencil className="h-4 w-4 mr-1.5" /> Edit
+                </Button>
+              </Link>
             </>
           )}
 
@@ -194,22 +177,6 @@ function VehicleDetailContent({
           </div>
         )}
       </Card>
-
-      {/* Edit Vehicle Modal */}
-      <Modal
-        isOpen={showEditModal}
-        onClose={() => setShowEditModal(false)}
-        title={`Edit Vehicle — ${vehicle.vehicleNumber}`}
-        size="lg"
-      >
-        <VehicleForm
-          initialData={vehicle}
-          tenants={tenants}
-          onSubmit={handleUpdate}
-          onCancel={() => setShowEditModal(false)}
-          loading={isUpdating}
-        />
-      </Modal>
 
       {/* Delete Confirmation */}
       <ConfirmDialog
