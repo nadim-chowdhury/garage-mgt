@@ -2,14 +2,28 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useGetTenantsQuery, useCreateTenantMutation } from '@/store/api/tenantApi';
-import { Button, Badge, Table, Pagination, Input, FilterPills, Modal, SearchInput } from '@/components/ui';
+import {
+  useGetTenantsQuery,
+  useCreateTenantMutation,
+  useUpdateTenantMutation,
+  useDeleteTenantMutation,
+} from '@/store/api/tenantApi';
+import {
+  Button,
+  Badge,
+  Table,
+  Pagination,
+  FilterPills,
+  Modal,
+  SearchInput,
+  ConfirmDialog,
+} from '@/components/ui';
 import { useToast } from '@/components/ui/Toast';
 import { useAuth } from '@/components/providers/AuthProvider';
 import type { Column } from '@/components/ui/Table';
 import type { Tenant, CreateTenantInput } from '@/types';
-import { formatCurrency, getTenantStatusColor, getVehicleTypeLabel } from '@/lib/utils';
-import { Users } from 'lucide-react';
+import { formatCurrency, getVehicleTypeLabel } from '@/lib/utils';
+import { Users, Pencil, Trash2 } from 'lucide-react';
 import TenantForm from '@/components/forms/TenantForm';
 
 export default function TenantsPage() {
@@ -18,9 +32,14 @@ export default function TenantsPage() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const { canWrite } = useAuth();
+  const [editingTenant, setEditingTenant] = useState<Tenant | null>(null);
+  const [tenantToDelete, setTenantToDelete] = useState<Tenant | null>(null);
+
+  const { canWrite, isAdmin } = useAuth();
   const { success, error: showError } = useToast();
   const [createTenant, { isLoading: isCreating }] = useCreateTenantMutation();
+  const [updateTenant, { isLoading: isUpdating }] = useUpdateTenantMutation();
+  const [deleteTenant, { isLoading: isDeleting }] = useDeleteTenantMutation();
 
   const { data, isLoading } = useGetTenantsQuery({
     page,
@@ -31,6 +50,17 @@ export default function TenantsPage() {
 
   const tenants = data?.data ?? [];
   const meta = data?.meta;
+
+  async function handleDelete() {
+    if (!tenantToDelete) return;
+    try {
+      await deleteTenant(tenantToDelete.id).unwrap();
+      success('Tenant deleted successfully');
+      setTenantToDelete(null);
+    } catch {
+      showError('Failed to delete tenant');
+    }
+  }
 
   const columns: Column<Tenant>[] = [
     {
@@ -53,14 +83,14 @@ export default function TenantsPage() {
       key: 'monthlyRent',
       header: 'Monthly Rent',
       render: (row) => (
-        <span className="font-medium">{formatCurrency(row.monthlyRent)}</span>
+        <span className="font-medium">{formatCurrency(Number(row.monthlyRent) || 0)}</span>
       ),
     },
     {
       key: 'securityDeposit',
       header: 'Security Deposit',
       hideOnMobile: true,
-      render: (row) => formatCurrency(row.securityDeposit),
+      render: (row) => formatCurrency(Number(row.securityDeposit) || 0),
     },
     {
       key: 'rentDueDay',
@@ -77,6 +107,36 @@ export default function TenantsPage() {
         </Badge>
       ),
     },
+    ...(canWrite
+      ? [
+          {
+            key: 'actions' as keyof Tenant,
+            header: 'Actions',
+            render: (r: Tenant) => (
+              <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+                <button
+                  type="button"
+                  onClick={() => setEditingTenant(r)}
+                  className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-indigo-600 transition-colors"
+                  title="Edit tenant"
+                >
+                  <Pencil className="h-4 w-4" />
+                </button>
+                {isAdmin && (
+                  <button
+                    type="button"
+                    onClick={() => setTenantToDelete(r)}
+                    className="rounded-lg p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600 transition-colors"
+                    title="Delete tenant"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+            ),
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -85,13 +145,9 @@ export default function TenantsPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Tenants</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            ভাড়াটিয়া ও গাড়ি ব্যবস্থাপনা
-          </p>
+          <p className="mt-1 text-sm text-slate-500">ভাড়াটিয়া ও গাড়ি ব্যবস্থাপনা</p>
         </div>
-        {canWrite && (
-          <Button onClick={() => setShowModal(true)}>+ Add Tenant</Button>
-        )}
+        {canWrite && <Button onClick={() => setShowModal(true)}>+ Add Tenant</Button>}
       </div>
 
       {/* Filters */}
@@ -114,7 +170,10 @@ export default function TenantsPage() {
               { value: 'inactive', label: 'Inactive' },
             ]}
             value={statusFilter}
-            onChange={(v) => { setStatusFilter(v); setPage(1); }}
+            onChange={(v) => {
+              setStatusFilter(v);
+              setPage(1);
+            }}
           />
         </div>
       </div>
@@ -134,19 +193,15 @@ export default function TenantsPage() {
 
       {/* Pagination */}
       {meta && meta.totalPages > 1 && (
-        <Pagination
-          currentPage={meta.page}
-          totalPages={meta.totalPages}
-          onPageChange={setPage}
-        />
+        <Pagination currentPage={meta.page} totalPages={meta.totalPages} onPageChange={setPage} />
       )}
 
       {/* Add Tenant Modal */}
       <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Add New Tenant" size="lg">
         <TenantForm
-          onSubmit={async (data: CreateTenantInput) => {
+          onSubmit={async (formData: CreateTenantInput) => {
             try {
-              const result = await createTenant(data).unwrap();
+              const result = await createTenant(formData).unwrap();
               if (result.success) {
                 success('Tenant added successfully');
                 setShowModal(false);
@@ -159,7 +214,48 @@ export default function TenantsPage() {
           loading={isCreating}
         />
       </Modal>
+
+      {/* Edit Tenant Modal */}
+      <Modal
+        isOpen={Boolean(editingTenant)}
+        onClose={() => setEditingTenant(null)}
+        title={`Edit Tenant — ${editingTenant?.name ?? ''}`}
+        size="lg"
+      >
+        {editingTenant && (
+          <TenantForm
+            initialData={editingTenant}
+            onSubmit={async (formData: CreateTenantInput) => {
+              try {
+                const result = await updateTenant({
+                  id: editingTenant.id,
+                  ...formData,
+                }).unwrap();
+                if (result.success) {
+                  success('Tenant updated successfully');
+                  setEditingTenant(null);
+                }
+              } catch {
+                showError('Failed to update tenant');
+              }
+            }}
+            onCancel={() => setEditingTenant(null)}
+            loading={isUpdating}
+          />
+        )}
+      </Modal>
+
+      {/* Delete Confirmation */}
+      <ConfirmDialog
+        isOpen={Boolean(tenantToDelete)}
+        onClose={() => setTenantToDelete(null)}
+        onConfirm={handleDelete}
+        title="Delete Tenant"
+        message={`Are you sure you want to delete ${tenantToDelete?.name}? This will remove all their associated records.`}
+        confirmText="Delete"
+        variant="danger"
+        loading={isDeleting}
+      />
     </div>
   );
 }
-

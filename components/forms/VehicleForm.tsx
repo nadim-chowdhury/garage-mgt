@@ -85,7 +85,7 @@ export default function VehicleForm({
 
   const tenantOptions = tenants.map((t) => ({
     value: t.id,
-    label: `${t.name} (${t.mobile})`,
+    label: `${t.name}${(t as { status?: string }).status === 'inactive' ? ' (Inactive)' : ''} (${t.mobile})`,
   }));
 
   return (

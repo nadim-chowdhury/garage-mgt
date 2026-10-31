@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 import { withAuth, withWriteAuth, type AuthContext } from '@/lib/api-auth';
+import { logAudit } from '@/lib/audit';
 
 export const GET = withAuth(async (request: NextRequest, { garageId }: AuthContext) => {
   try {
@@ -67,7 +68,7 @@ export const GET = withAuth(async (request: NextRequest, { garageId }: AuthConte
   }
 });
 
-export const POST = withWriteAuth(async (request: NextRequest, { garageId }: AuthContext) => {
+export const POST = withWriteAuth(async (request: NextRequest, { garageId, userId, userName }: AuthContext) => {
   try {
     const body = await request.json();
     const { tenantId, rentMonth, rentYear, rentAmount, paidAmount, paymentMethod, dueDate, receiptNumber, notes } = body;
@@ -133,7 +134,19 @@ export const POST = withWriteAuth(async (request: NextRequest, { garageId }: Aut
       `;
     }
 
-    return NextResponse.json({ success: true, data: rows[0] }, { status: 201 });
+    const payment = rows[0];
+
+    await logAudit({
+      garageId,
+      userId,
+      userName,
+      action: 'create',
+      entityType: 'rent_payment',
+      entityId: payment.id,
+      details: `Recorded rent payment for period ${rentMonth}/${rentYear} (Paid: ৳${paid})`,
+    });
+
+    return NextResponse.json({ success: true, data: payment }, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to record rent payment';
     return NextResponse.json({ success: false, error: message }, { status: 500 });

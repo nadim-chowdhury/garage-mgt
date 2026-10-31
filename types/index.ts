@@ -286,6 +286,18 @@ export interface MonthlyCollectionReport {
   totalCount: number;
 }
 
+export interface AuditLog {
+  id: string;
+  garageId: string;
+  userId: string | null;
+  userName: string;
+  action: 'create' | 'update' | 'delete';
+  entityType: string;
+  entityId: string | null;
+  details: string | null;
+  createdAt: string;
+}
+
 // --- Form Input Types (for create/update without server-generated fields) ---
 
 export type CreateTenantInput = Omit<Tenant, 'id' | 'createdAt' | 'updatedAt'>;
@@ -295,7 +307,28 @@ export type CreateVehicleInput = Omit<Vehicle, 'id' | 'createdAt' | 'updatedAt'>
 export type UpdateVehicleInput = Partial<CreateVehicleInput>;
 
 export type CreateDailyEntryInput = Omit<DailyVehicleEntry, 'id' | 'createdAt'>;
+export type UpdateDailyEntryInput = Partial<CreateDailyEntryInput>;
+
 export type CreateIncomeInput = Omit<IncomeEntry, 'id' | 'createdAt'>;
+export type UpdateIncomeInput = Partial<CreateIncomeInput>;
+
 export type CreateExpenseInput = Omit<ExpenseEntry, 'id' | 'createdAt'>;
+export type UpdateExpenseInput = Partial<CreateExpenseInput>;
+
 export type CreateRentPaymentInput = Omit<RentPayment, 'id' | 'createdAt' | 'updatedAt'>;
+export type UpdateRentPaymentInput = Partial<CreateRentPaymentInput>;
+
+export interface CreateUserInput {
+  phone: string;
+  name: string;
+  password: string;
+  role: UserRole;
+}
+
+export interface UpdateUserInput {
+  name?: string;
+  role?: UserRole;
+  status?: UserStatus;
+  password?: string;
+}
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 import { withAuth, withWriteAuth, type AuthContext } from '@/lib/api-auth';
+import { logAudit } from '@/lib/audit';
 import type { ApiResponse, Tenant } from '@/types';
 
 // ── GET /api/tenants ───────────────────────────────────────
@@ -64,7 +65,7 @@ export const GET = withAuth(async (request: NextRequest, { garageId }: AuthConte
 });
 
 // ── POST /api/tenants ──────────────────────────────────────
-export const POST = withWriteAuth(async (request: NextRequest, { garageId }: AuthContext) => {
+export const POST = withWriteAuth(async (request: NextRequest, { garageId, userId, userName }: AuthContext) => {
   try {
     const body = await request.json();
     const { name, mobile, nid, address, vehicleType, monthlyRent, rentDueDay, securityDeposit, status, notes } = body;
@@ -90,8 +91,20 @@ export const POST = withWriteAuth(async (request: NextRequest, { garageId }: Aut
         updated_at AS "updatedAt"
     `;
 
+    const newTenant = rows[0] as Tenant;
+
+    await logAudit({
+      garageId,
+      userId,
+      userName,
+      action: 'create',
+      entityType: 'tenant',
+      entityId: newTenant.id,
+      details: `Created tenant ${newTenant.name} (${newTenant.mobile})`,
+    });
+
     return NextResponse.json(
-      { success: true, data: rows[0] as Tenant } satisfies ApiResponse<Tenant>,
+      { success: true, data: newTenant } satisfies ApiResponse<Tenant>,
       { status: 201 },
     );
   } catch (error) {

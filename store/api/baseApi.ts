@@ -13,6 +13,8 @@ export const baseApi = createApi({
     'Dashboard',
     'CashBook',
     'Report',
+    'User',
+    'AuditLog',
   ],
   endpoints: () => ({}), // injected by feature API slices
 });

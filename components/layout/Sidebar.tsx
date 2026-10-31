@@ -17,6 +17,8 @@ import {
   BarChart3,
   ChevronLeft,
   ChevronRight,
+  UserCog,
+  History,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -49,6 +51,7 @@ const navigation: NavGroup[] = [
     items: [
       { label: 'Tenants', href: '/tenants', icon: Users },
       { label: 'Vehicles', href: '/vehicles', icon: Truck },
+      { label: 'Users', href: '/users', icon: UserCog },
     ],
   },
   {
@@ -61,7 +64,10 @@ const navigation: NavGroup[] = [
   },
   {
     title: 'Tracking',
-    items: [{ label: 'Dues', href: '/dues', icon: ClipboardList }],
+    items: [
+      { label: 'Dues', href: '/dues', icon: ClipboardList },
+      { label: 'Activity Logs', href: '/audit-logs', icon: History },
+    ],
   },
   {
     title: 'Analytics',

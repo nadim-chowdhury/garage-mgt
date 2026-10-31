@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 import { withAuth, withWriteAuth, type AuthContext } from '@/lib/api-auth';
+import { logAudit } from '@/lib/audit';
 import type { ApiResponse } from '@/types';
 
 // ── GET /api/vehicles ──────────────────────────────────────
@@ -72,7 +73,7 @@ export const GET = withAuth(async (request: NextRequest, { garageId }: AuthConte
 });
 
 // ── POST /api/vehicles ─────────────────────────────────────
-export const POST = withWriteAuth(async (request: NextRequest, { garageId }: AuthContext) => {
+export const POST = withWriteAuth(async (request: NextRequest, { garageId, userId, userName }: AuthContext) => {
   try {
     const body = await request.json();
     const { tenantId, vehicleNumber, vehicleType, ownerName, ownerMobile, driverName, driverMobile, notes, status } = body;
@@ -100,7 +101,19 @@ export const POST = withWriteAuth(async (request: NextRequest, { garageId }: Aut
         updated_at AS "updatedAt"
     `;
 
-    return NextResponse.json({ success: true, data: rows[0] }, { status: 201 });
+    const newVehicle = rows[0];
+
+    await logAudit({
+      garageId,
+      userId,
+      userName,
+      action: 'create',
+      entityType: 'vehicle',
+      entityId: newVehicle.id,
+      details: `Created vehicle ${newVehicle.vehicleNumber}`,
+    });
+
+    return NextResponse.json({ success: true, data: newVehicle }, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to create vehicle';
     return NextResponse.json({ success: false, error: message }, { status: 500 });

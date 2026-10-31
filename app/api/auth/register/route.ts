@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 import { hashPassword, createSessionToken, setSessionCookie } from '@/lib/auth';
+import { logAudit } from '@/lib/audit';
 import type { ApiResponse, SessionPayload } from '@/types';
 
 /**
@@ -32,17 +33,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if any users exist already
-    const [existingUsers] = await sql`SELECT COUNT(*)::int AS count FROM users`;
-    if (existingUsers.count > 0) {
-      return NextResponse.json(
-        { success: false, error: 'Registration is closed. Contact your administrator to add new users.' } satisfies ApiResponse<never>,
-        { status: 403 },
-      );
-    }
-
     // Check for duplicate phone
-    const existingPhone = await sql`SELECT id FROM users WHERE phone = ${phone}`;
+    const existingPhone = await sql`SELECT id FROM users WHERE phone = ${phone.trim()}`;
     if (existingPhone.length > 0) {
       return NextResponse.json(
         { success: false, error: 'Phone number already registered' } satisfies ApiResponse<never>,
@@ -52,18 +44,29 @@ export async function POST(request: NextRequest) {
 
     // Create garage
     const [garage] = await sql`
-      INSERT INTO garages (name, address)
-      VALUES (${garageName}, ${garageAddress ?? ''})
+      INSERT INTO garages (name, address, owner_name, owner_mobile)
+      VALUES (${garageName.trim()}, ${garageAddress?.trim() ?? ''}, ${name.trim()}, ${phone.trim()})
       RETURNING id, name
     `;
 
     // Create admin user
     const passwordHash = await hashPassword(password);
     const [user] = await sql`
-      INSERT INTO users (phone, password_hash, name, role, garage_id)
-      VALUES (${phone}, ${passwordHash}, ${name}, 'admin', ${garage.id})
+      INSERT INTO users (phone, password_hash, name, role, garage_id, status)
+      VALUES (${phone.trim()}, ${passwordHash}, ${name.trim()}, 'admin', ${garage.id}, 'active')
       RETURNING id, phone, name, role
     `;
+
+    // Log audit
+    await logAudit({
+      garageId: garage.id,
+      userId: user.id,
+      userName: user.name,
+      action: 'create',
+      entityType: 'user',
+      entityId: user.id,
+      details: `Garage owner registered: ${user.name} for ${garage.name}`,
+    });
 
     // Auto-login
     const sessionPayload: SessionPayload = {

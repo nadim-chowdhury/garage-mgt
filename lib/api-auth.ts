@@ -8,6 +8,8 @@ export interface AuthContext {
   session: SessionPayload;
   garageId: string;
   role: UserRole;
+  userId: string;
+  userName: string;
 }
 
 type AuthenticatedHandler = (
@@ -50,6 +52,8 @@ export function withAuth(handler: AuthenticatedHandler) {
       session,
       garageId: session.garageId,
       role: session.role,
+      userId: session.userId,
+      userName: session.name,
     });
   };
 }
@@ -83,6 +87,8 @@ export function withAuthRoute(handler: AuthenticatedRouteHandler) {
       session,
       garageId: session.garageId,
       role: session.role,
+      userId: session.userId,
+      userName: session.name,
     });
   };
 }
@@ -121,6 +127,21 @@ export function withWriteAuthRoute(handler: AuthenticatedRouteHandler) {
 }
 
 // ── Delete Auth — Requires admin role ──────────────────────
+
+/**
+ * Like withAuth, but requires admin role.
+ */
+export function withAdminAuth(handler: AuthenticatedHandler) {
+  return withAuth(async (request, context) => {
+    if (context.role !== 'admin') {
+      return NextResponse.json(
+        { success: false, error: 'Admin access required' },
+        { status: 403 },
+      );
+    }
+    return handler(request, context);
+  });
+}
 
 /**
  * Like withAuthRoute, but requires admin role for destructive actions.

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 import { withAuthRoute, withWriteAuthRoute, withAdminAuthRoute } from '@/lib/api-auth';
+import { logAudit } from '@/lib/audit';
 import type { ApiResponse, Tenant } from '@/types';
 
 // ── GET /api/tenants/[id] ──────────────────────────────────
@@ -46,7 +47,7 @@ export const GET = withAuthRoute(async (
 export const PUT = withWriteAuthRoute(async (
   request: NextRequest,
   routeCtx: unknown,
-  { garageId },
+  { garageId, userId, userName },
 ) => {
   try {
     const { id } = await (routeCtx as RouteContext<'/api/tenants/[id]'>).params;
@@ -82,9 +83,21 @@ export const PUT = withWriteAuthRoute(async (
       return NextResponse.json({ success: false, error: 'Tenant not found' }, { status: 404 });
     }
 
+    const updated = rows[0] as Tenant;
+
+    await logAudit({
+      garageId,
+      userId,
+      userName,
+      action: 'update',
+      entityType: 'tenant',
+      entityId: id,
+      details: `Updated tenant ${updated.name} (${updated.mobile})`,
+    });
+
     return NextResponse.json({
       success: true,
-      data: rows[0] as Tenant,
+      data: updated,
     } satisfies ApiResponse<Tenant>);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to update tenant';
@@ -96,15 +109,25 @@ export const PUT = withWriteAuthRoute(async (
 export const DELETE = withAdminAuthRoute(async (
   _req: NextRequest,
   routeCtx: unknown,
-  { garageId },
+  { garageId, userId, userName },
 ) => {
   try {
     const { id } = await (routeCtx as RouteContext<'/api/tenants/[id]'>).params;
-    const rows = await sql`DELETE FROM tenants WHERE id = ${id} AND garage_id = ${garageId} RETURNING id`;
+    const rows = await sql`DELETE FROM tenants WHERE id = ${id} AND garage_id = ${garageId} RETURNING id, name`;
 
     if (rows.length === 0) {
       return NextResponse.json({ success: false, error: 'Tenant not found' }, { status: 404 });
     }
+
+    await logAudit({
+      garageId,
+      userId,
+      userName,
+      action: 'delete',
+      entityType: 'tenant',
+      entityId: id,
+      details: `Deleted tenant ${rows[0].name}`,
+    });
 
     return NextResponse.json({ success: true, data: { id } } satisfies ApiResponse<{ id: string }>);
   } catch (error) {

@@ -2,17 +2,30 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useGetVehiclesQuery, useCreateVehicleMutation } from '@/store/api/vehicleApi';
+import {
+  useGetVehiclesQuery,
+  useCreateVehicleMutation,
+  useUpdateVehicleMutation,
+  useDeleteVehicleMutation,
+} from '@/store/api/vehicleApi';
 import { useGetTenantsQuery } from '@/store/api/tenantApi';
-import { Button, Badge, Table, Pagination, Input, Modal, SearchInput } from '@/components/ui';
+import {
+  Button,
+  Badge,
+  Table,
+  Pagination,
+  Modal,
+  SearchInput,
+  ConfirmDialog,
+} from '@/components/ui';
+import { useToast } from '@/components/ui/Toast';
 import { useAuth } from '@/components/providers/AuthProvider';
 import type { Column } from '@/components/ui/Table';
 import type { Vehicle, CreateVehicleInput } from '@/types';
 import { getVehicleTypeLabel } from '@/lib/utils';
 import VehicleForm from '@/components/forms/VehicleForm';
-import { Car } from 'lucide-react';
+import { Car, Pencil, Trash2 } from 'lucide-react';
 
-/** Extended vehicle row from API (includes tenant name from JOIN) */
 interface VehicleRow extends Vehicle {
   tenantName?: string;
 }
@@ -22,20 +35,62 @@ export default function VehiclesPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
-  const { canWrite } = useAuth();
+  const [editingVehicle, setEditingVehicle] = useState<VehicleRow | null>(null);
+  const [vehicleToDelete, setVehicleToDelete] = useState<VehicleRow | null>(null);
 
-  const { data, isLoading } = useGetVehiclesQuery({ page, limit: 20, search: search || undefined });
-  const { data: tenantsRes } = useGetTenantsQuery({ limit: 100, status: 'active' });
+  const { success, error: showError } = useToast();
+  const { canWrite, isAdmin } = useAuth();
+
+  const { data, isLoading } = useGetVehiclesQuery({
+    page,
+    limit: 20,
+    search: search || undefined,
+  });
+  const { data: tenantsRes } = useGetTenantsQuery({ limit: 100 });
   const [createVehicle, { isLoading: isCreating }] = useCreateVehicleMutation();
+  const [updateVehicle, { isLoading: isUpdating }] = useUpdateVehicleMutation();
+  const [deleteVehicle, { isLoading: isDeleting }] = useDeleteVehicleMutation();
 
   const vehicles = (data?.data ?? []) as unknown as VehicleRow[];
   const meta = data?.meta;
   const tenants = tenantsRes?.data ?? [];
 
   async function handleCreate(formData: CreateVehicleInput) {
-    const result = await createVehicle(formData).unwrap();
-    if (result.success) {
-      setShowAddModal(false);
+    try {
+      const result = await createVehicle(formData).unwrap();
+      if (result.success) {
+        success('Vehicle created successfully');
+        setShowAddModal(false);
+      }
+    } catch {
+      showError('Failed to create vehicle');
+    }
+  }
+
+  async function handleUpdate(formData: CreateVehicleInput) {
+    if (!editingVehicle) return;
+    try {
+      const result = await updateVehicle({
+        id: editingVehicle.id,
+        ...formData,
+      }).unwrap();
+      if (result.success) {
+        success('Vehicle updated successfully');
+        setEditingVehicle(null);
+      }
+    } catch {
+      showError('Failed to update vehicle');
+    }
+  }
+
+  async function handleDelete() {
+    if (!vehicleToDelete) return;
+    try {
+      await deleteVehicle(vehicleToDelete.id).unwrap();
+      success('Vehicle deleted successfully');
+      setVehicleToDelete(null);
+    } catch {
+      showError('Failed to delete vehicle');
     }
   }
 
@@ -79,6 +134,36 @@ export default function VehiclesPage() {
         </Badge>
       ),
     },
+    ...(canWrite
+      ? [
+          {
+            key: 'actions' as keyof VehicleRow,
+            header: 'Actions',
+            render: (r: VehicleRow) => (
+              <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+                <button
+                  type="button"
+                  onClick={() => setEditingVehicle(r)}
+                  className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-indigo-600 transition-colors"
+                  title="Edit vehicle"
+                >
+                  <Pencil className="h-4 w-4" />
+                </button>
+                {isAdmin && (
+                  <button
+                    type="button"
+                    onClick={() => setVehicleToDelete(r)}
+                    className="rounded-lg p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600 transition-colors"
+                    title="Delete vehicle"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+            ),
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -122,6 +207,7 @@ export default function VehiclesPage() {
         />
       )}
 
+      {/* Add Vehicle Modal */}
       <Modal
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
@@ -134,6 +220,35 @@ export default function VehiclesPage() {
           loading={isCreating}
         />
       </Modal>
+
+      {/* Edit Vehicle Modal */}
+      <Modal
+        isOpen={Boolean(editingVehicle)}
+        onClose={() => setEditingVehicle(null)}
+        title={`Edit Vehicle — ${editingVehicle?.vehicleNumber ?? ''}`}
+        size="lg"
+      >
+        {editingVehicle && (
+          <VehicleForm
+            initialData={editingVehicle}
+            tenants={tenants}
+            onSubmit={handleUpdate}
+            loading={isUpdating}
+          />
+        )}
+      </Modal>
+
+      {/* Delete Confirmation */}
+      <ConfirmDialog
+        isOpen={Boolean(vehicleToDelete)}
+        onClose={() => setVehicleToDelete(null)}
+        onConfirm={handleDelete}
+        title="Delete Vehicle"
+        message={`Are you sure you want to delete vehicle ${vehicleToDelete?.vehicleNumber}? This action cannot be undone.`}
+        confirmText="Delete"
+        variant="danger"
+        loading={isDeleting}
+      />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 import { withAuthRoute, withWriteAuthRoute, withAdminAuthRoute } from '@/lib/api-auth';
+import { logAudit } from '@/lib/audit';
 import type { ApiResponse } from '@/types';
 
 export const GET = withAuthRoute(async (
@@ -40,7 +41,7 @@ export const GET = withAuthRoute(async (
 export const PUT = withWriteAuthRoute(async (
   request: NextRequest,
   routeCtx: unknown,
-  { garageId },
+  { garageId, userId, userName },
 ) => {
   try {
     const { id } = await (routeCtx as RouteContext<'/api/vehicles/[id]'>).params;
@@ -77,7 +78,19 @@ export const PUT = withWriteAuthRoute(async (
       return NextResponse.json({ success: false, error: 'Vehicle not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, data: rows[0] });
+    const updated = rows[0];
+
+    await logAudit({
+      garageId,
+      userId,
+      userName,
+      action: 'update',
+      entityType: 'vehicle',
+      entityId: id,
+      details: `Updated vehicle ${updated.vehicleNumber}`,
+    });
+
+    return NextResponse.json({ success: true, data: updated });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to update vehicle';
     return NextResponse.json({ success: false, error: message }, { status: 500 });
@@ -87,15 +100,25 @@ export const PUT = withWriteAuthRoute(async (
 export const DELETE = withAdminAuthRoute(async (
   _req: NextRequest,
   routeCtx: unknown,
-  { garageId },
+  { garageId, userId, userName },
 ) => {
   try {
     const { id } = await (routeCtx as RouteContext<'/api/vehicles/[id]'>).params;
-    const rows = await sql`DELETE FROM vehicles WHERE id = ${id} AND garage_id = ${garageId} RETURNING id`;
+    const rows = await sql`DELETE FROM vehicles WHERE id = ${id} AND garage_id = ${garageId} RETURNING id, vehicle_number AS "vehicleNumber"`;
 
     if (rows.length === 0) {
       return NextResponse.json({ success: false, error: 'Vehicle not found' }, { status: 404 });
     }
+
+    await logAudit({
+      garageId,
+      userId,
+      userName,
+      action: 'delete',
+      entityType: 'vehicle',
+      entityId: id,
+      details: `Deleted vehicle ${rows[0].vehicleNumber}`,
+    });
 
     return NextResponse.json({ success: true, data: { id } } satisfies ApiResponse<{ id: string }>);
   } catch (error) {

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 import { withAuth, withWriteAuth, type AuthContext } from '@/lib/api-auth';
+import { logAudit } from '@/lib/audit';
 
 export const GET = withAuth(async (request: NextRequest, { garageId }: AuthContext) => {
   try {
@@ -66,7 +67,7 @@ export const GET = withAuth(async (request: NextRequest, { garageId }: AuthConte
   }
 });
 
-export const POST = withWriteAuth(async (request: NextRequest, { garageId }: AuthContext) => {
+export const POST = withWriteAuth(async (request: NextRequest, { garageId, userId, userName }: AuthContext) => {
   try {
     const body = await request.json();
     const {
@@ -123,6 +124,16 @@ export const POST = withWriteAuth(async (request: NextRequest, { garageId }: Aut
            ${'Daily vehicle charge: ' + vehicleNumber})
       `;
     }
+
+    await logAudit({
+      garageId,
+      userId,
+      userName,
+      action: 'create',
+      entityType: 'daily_entry',
+      entityId: entry.id,
+      details: `Created daily entry for ${vehicleNumber} (Paid: ৳${paid}/${charge})`,
+    });
 
     return NextResponse.json({ success: true, data: entry }, { status: 201 });
   } catch (error) {

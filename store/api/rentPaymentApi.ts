@@ -1,5 +1,11 @@
 import { baseApi } from './baseApi';
-import type { RentPayment, ApiResponse, CreateRentPaymentInput, PaginationParams } from '@/types';
+import type {
+  RentPayment,
+  ApiResponse,
+  CreateRentPaymentInput,
+  UpdateRentPaymentInput,
+  PaginationParams,
+} from '@/types';
 
 interface RentPaymentParams extends PaginationParams {
   tenantId?: string;
@@ -22,15 +28,64 @@ export const rentPaymentApi = baseApi.injectEndpoints({
         const qs = sp.toString();
         return `/rent-payments${qs ? `?${qs}` : ''}`;
       },
-      providesTags: [{ type: 'RentPayment', id: 'LIST' }],
+      providesTags: (result) =>
+        result?.data
+          ? [
+              ...result.data.map(({ id }) => ({ type: 'RentPayment' as const, id })),
+              { type: 'RentPayment', id: 'LIST' },
+            ]
+          : [{ type: 'RentPayment', id: 'LIST' }],
     }),
 
     createRentPayment: build.mutation<ApiResponse<RentPayment>, CreateRentPaymentInput>({
       query: (body) => ({ url: '/rent-payments', method: 'POST', body }),
-      invalidatesTags: [{ type: 'RentPayment', id: 'LIST' }, 'Dashboard', 'Income', 'CashBook'],
+      invalidatesTags: [
+        { type: 'RentPayment', id: 'LIST' },
+        'Dashboard',
+        'Income',
+        'CashBook',
+        { type: 'AuditLog', id: 'LIST' },
+      ],
+    }),
+
+    updateRentPayment: build.mutation<
+      ApiResponse<RentPayment>,
+      { id: string } & UpdateRentPaymentInput
+    >({
+      query: ({ id, ...body }) => ({
+        url: `/rent-payments/${id}`,
+        method: 'PUT',
+        body,
+      }),
+      invalidatesTags: (_r, _e, { id }) => [
+        { type: 'RentPayment', id },
+        { type: 'RentPayment', id: 'LIST' },
+        'Dashboard',
+        'Income',
+        'CashBook',
+        { type: 'AuditLog', id: 'LIST' },
+      ],
+    }),
+
+    deleteRentPayment: build.mutation<ApiResponse<{ id: string }>, string>({
+      query: (id) => ({
+        url: `/rent-payments/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: [
+        { type: 'RentPayment', id: 'LIST' },
+        'Dashboard',
+        'Income',
+        'CashBook',
+        { type: 'AuditLog', id: 'LIST' },
+      ],
     }),
   }),
 });
 
-export const { useGetRentPaymentsQuery, useCreateRentPaymentMutation } = rentPaymentApi;
-
+export const {
+  useGetRentPaymentsQuery,
+  useCreateRentPaymentMutation,
+  useUpdateRentPaymentMutation,
+  useDeleteRentPaymentMutation,
+} = rentPaymentApi;
