@@ -106,6 +106,11 @@ function VehicleDetailContent({
         <div className="flex flex-wrap items-center gap-2">
           {canWrite && (
             <>
+              <Link href={`/vehicles/${id}/edit`}>
+                <Button variant="secondary">
+                  <Pencil className="h-4 w-4 mr-1.5" /> Edit
+                </Button>
+              </Link>
               <Button
                 variant={vehicle.status === 'active' ? 'secondary' : 'primary'}
                 onClick={handleToggleStatus}
@@ -121,11 +126,6 @@ function VehicleDetailContent({
                   </>
                 )}
               </Button>
-              <Link href={`/vehicles/${id}/edit`}>
-                <Button variant="secondary">
-                  <Pencil className="h-4 w-4 mr-1.5" /> Edit
-                </Button>
-              </Link>
             </>
           )}
 
@@ -156,14 +156,23 @@ function VehicleDetailContent({
                   {vehicle.status === 'active' ? 'Active' : 'Inactive'}
                 </Badge>
                 {canWrite && (
-                  <button
-                    type="button"
-                    onClick={handleToggleStatus}
-                    disabled={isUpdating}
-                    className="text-xs text-primary-600 hover:text-primary-800 underline font-medium disabled:opacity-50"
-                  >
-                    Change to {vehicle.status === 'active' ? 'inactive' : 'active'}
-                  </button>
+                  <>
+                    <button
+                      type="button"
+                      onClick={handleToggleStatus}
+                      disabled={isUpdating}
+                      className="text-xs text-primary-600 hover:text-primary-800 underline font-medium disabled:opacity-50"
+                    >
+                      Change to {vehicle.status === 'active' ? 'inactive' : 'active'}
+                    </button>
+                    <span className="text-slate-300">•</span>
+                    <Link
+                      href={`/vehicles/${id}/edit`}
+                      className="text-xs text-indigo-600 hover:text-indigo-800 underline font-medium"
+                    >
+                      Edit vehicle
+                    </Link>
+                  </>
                 )}
               </div>
             }
