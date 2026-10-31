@@ -17,8 +17,8 @@ const vehicleTypeOptions = [
 ];
 
 const statusOptions = [
-  { value: 'active', label: 'Active (সক্রিয়)' },
-  { value: 'inactive', label: 'Inactive (নিষ্ক্রিয়)' },
+  { value: 'active', label: 'Active' },
+  { value: 'inactive', label: 'Inactive' },
 ];
 
 interface VehicleFormProps {
@@ -87,21 +87,32 @@ export default function VehicleForm({
 
   const tenantOptions = tenants.map((t) => ({
     value: t.id,
-    label: `${t.name}${(t as { status?: string }).status === 'inactive' ? ' (Inactive)' : ''} (${t.mobile})`,
+    label: `${t.name} (${t.mobile})`,
   }));
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <Select
-        id="tenantId"
-        label="Tenant"
-        required
-        placeholder="Select tenant..."
-        options={tenantOptions}
-        value={form.tenantId}
-        onChange={(e) => update('tenantId', e.target.value)}
-        error={errors.tenantId}
-      />
+      {/* Vehicle & Tenant Info */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <Select
+          id="tenantId"
+          label="Tenant"
+          required
+          placeholder="Select tenant..."
+          options={tenantOptions}
+          value={form.tenantId}
+          onChange={(e) => update('tenantId', e.target.value)}
+          error={errors.tenantId}
+        />
+        <Select
+          id="vehicleType"
+          label="Vehicle Type"
+          required
+          options={vehicleTypeOptions}
+          value={form.vehicleType}
+          onChange={(e) => update('vehicleType', e.target.value)}
+        />
+      </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Input
@@ -114,15 +125,15 @@ export default function VehicleForm({
           error={errors.vehicleNumber}
         />
         <Select
-          id="vehicleType"
-          label="Vehicle Type"
-          required
-          options={vehicleTypeOptions}
-          value={form.vehicleType}
-          onChange={(e) => update('vehicleType', e.target.value)}
+          id="status"
+          label="Status"
+          options={statusOptions}
+          value={form.status}
+          onChange={(e) => update('status', e.target.value)}
         />
       </div>
 
+      {/* Owner Info */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Input
           id="ownerName"
@@ -140,6 +151,7 @@ export default function VehicleForm({
         />
       </div>
 
+      {/* Driver Info */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Input
           id="driverName"
@@ -156,14 +168,6 @@ export default function VehicleForm({
           onChange={(e) => update('driverMobile', e.target.value)}
         />
       </div>
-
-      <Select
-        id="status"
-        label="Status"
-        options={statusOptions}
-        value={form.status}
-        onChange={(e) => update('status', e.target.value)}
-      />
 
       <Textarea
         id="notes"
