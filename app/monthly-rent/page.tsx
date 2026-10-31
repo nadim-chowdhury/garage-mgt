@@ -97,10 +97,10 @@ export default function MonthlyRentPage() {
     { key: 'tenantName', header: 'Tenant', render: (r) => (
       <div><p className="font-medium text-slate-900">{r.tenantName}</p><p className="text-xs text-slate-400">{r.tenantMobile}</p></div>
     )},
-    { key: 'rentAmount', header: 'Rent', render: (r) => formatCurrency(r.rentAmount) },
+    { key: 'rentAmount', header: 'Rent', hideOnMobile: true, render: (r) => formatCurrency(r.rentAmount) },
     { key: 'paidAmount', header: 'Paid', render: (r) => <span className="font-medium text-emerald-600">{formatCurrency(r.paidAmount)}</span> },
     { key: 'dueAmount', header: 'Due', render: (r) => r.dueAmount > 0 ? <span className="font-medium text-red-600">{formatCurrency(r.dueAmount)}</span> : '—' },
-    { key: 'paymentMethod', header: 'Method', render: (r) => getPaymentMethodLabel(r.paymentMethod) },
+    { key: 'paymentMethod', header: 'Method', hideOnMobile: true, render: (r) => getPaymentMethodLabel(r.paymentMethod) },
     { key: 'paymentStatus', header: 'Status', render: (r) => statusBadge(r.paymentStatus) },
   ];
 

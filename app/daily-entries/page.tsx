@@ -67,13 +67,13 @@ export default function DailyEntriesPage() {
 
   const columns: Column<DailyVehicleEntry>[] = [
     { key: 'vehicleNumber', header: 'Vehicle No.', render: (r) => <span className="font-medium">{r.vehicleNumber}</span> },
-    { key: 'vehicleType', header: 'Type', render: (r) => getVehicleTypeLabel(r.vehicleType) },
-    { key: 'ownerName', header: 'Owner', render: (r) => r.ownerName || '—' },
+    { key: 'vehicleType', header: 'Type', hideOnMobile: true, render: (r) => getVehicleTypeLabel(r.vehicleType) },
+    { key: 'ownerName', header: 'Owner', hideOnMobile: true, render: (r) => r.ownerName || '—' },
     { key: 'chargeAmount', header: 'Charge', render: (r) => formatCurrency(r.chargeAmount) },
     { key: 'paidAmount', header: 'Paid', render: (r) => <span className="font-medium text-emerald-600">{formatCurrency(r.paidAmount)}</span> },
-    { key: 'paymentMethod', header: 'Method', render: (r) => getPaymentMethodLabel(r.paymentMethod) },
+    { key: 'paymentMethod', header: 'Method', hideOnMobile: true, render: (r) => getPaymentMethodLabel(r.paymentMethod) },
     { key: 'paymentStatus', header: 'Status', render: (r) => statusBadge(r.paymentStatus) },
-    { key: 'entryTime', header: 'Time', render: (r) => r.entryTime?.slice(0, 5) ?? '—' },
+    { key: 'entryTime', header: 'Time', hideOnMobile: true, render: (r) => r.entryTime?.slice(0, 5) ?? '—' },
   ];
 
   return (

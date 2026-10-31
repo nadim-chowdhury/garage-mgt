@@ -46,6 +46,7 @@ export default function TenantsPage() {
     {
       key: 'vehicleType',
       header: 'Vehicle Type',
+      hideOnMobile: true,
       render: (row) => getVehicleTypeLabel(row.vehicleType),
     },
     {
@@ -58,11 +59,13 @@ export default function TenantsPage() {
     {
       key: 'securityDeposit',
       header: 'Security Deposit',
+      hideOnMobile: true,
       render: (row) => formatCurrency(row.securityDeposit),
     },
     {
       key: 'rentDueDay',
       header: 'Due Day',
+      hideOnMobile: true,
       render: (row) => <span>Day {row.rentDueDay}</span>,
     },
     {

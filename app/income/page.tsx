@@ -87,11 +87,11 @@ export default function IncomePage() {
   const columns: Column<IncomeRow>[] = [
     { key: 'incomeDate', header: 'Date', render: (r) => formatDate(r.incomeDate) },
     { key: 'category', header: 'Category', render: (r) => categoryBadge(r.category) },
-    { key: 'tenantName', header: 'Tenant', render: (r) => r.tenantName || '—' },
+    { key: 'tenantName', header: 'Tenant', hideOnMobile: true, render: (r) => r.tenantName || '—' },
     { key: 'amount', header: 'Amount', render: (r) => <span className="font-semibold text-emerald-600">{formatCurrency(r.amount)}</span> },
-    { key: 'paymentMethod', header: 'Method', render: (r) => getPaymentMethodLabel(r.paymentMethod) },
-    { key: 'receiptNumber', header: 'Receipt', render: (r) => r.receiptNumber || '—' },
-    { key: 'notes', header: 'Notes', render: (r) => <span className="max-w-[200px] truncate block">{r.notes || '—'}</span> },
+    { key: 'paymentMethod', header: 'Method', hideOnMobile: true, render: (r) => getPaymentMethodLabel(r.paymentMethod) },
+    { key: 'receiptNumber', header: 'Receipt', hideOnMobile: true, render: (r) => r.receiptNumber || '—' },
+    { key: 'notes', header: 'Notes', hideOnMobile: true, render: (r) => <span className="max-w-[200px] truncate block">{r.notes || '—'}</span> },
   ];
 
   return (

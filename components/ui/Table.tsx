@@ -9,6 +9,8 @@ export interface Column<T> {
   key: string;
   header: string;
   className?: string;
+  /** Hide this column on screens smaller than `sm` (640px) */
+  hideOnMobile?: boolean;
   render?: (row: T) => ReactNode;
 }
 
@@ -60,6 +62,7 @@ export default function Table<T>({
                 key={col.key}
                 className={cn(
                   'px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500',
+                  col.hideOnMobile && 'hidden sm:table-cell',
                   col.className,
                 )}
               >
@@ -84,6 +87,7 @@ export default function Table<T>({
                   key={col.key}
                   className={cn(
                     'px-4 py-3 text-sm text-slate-700 whitespace-nowrap',
+                    col.hideOnMobile && 'hidden sm:table-cell',
                     col.className,
                   )}
                 >

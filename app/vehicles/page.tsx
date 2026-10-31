@@ -55,16 +55,19 @@ export default function VehiclesPage() {
     {
       key: 'tenantName',
       header: 'Tenant',
+      hideOnMobile: true,
       render: (row) => row.tenantName || '—',
     },
     {
       key: 'ownerName',
       header: 'Owner',
+      hideOnMobile: true,
       render: (row) => row.ownerName || '—',
     },
     {
       key: 'driverName',
       header: 'Driver',
+      hideOnMobile: true,
       render: (row) => row.driverName || '—',
     },
     {

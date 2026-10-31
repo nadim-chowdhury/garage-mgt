@@ -79,10 +79,10 @@ export default function ExpensesPage() {
   const columns: Column<ExpenseEntry>[] = [
     { key: 'expenseDate', header: 'Date', render: (r) => formatDate(r.expenseDate) },
     { key: 'category', header: 'Category', render: (r) => categoryBadge(r.category) },
-    { key: 'description', header: 'Description', render: (r) => r.description || '—' },
+    { key: 'description', header: 'Description', hideOnMobile: true, render: (r) => r.description || '—' },
     { key: 'amount', header: 'Amount', render: (r) => <span className="font-semibold text-red-600">{formatCurrency(r.amount)}</span> },
-    { key: 'paymentMethod', header: 'Method', render: (r) => getPaymentMethodLabel(r.paymentMethod) },
-    { key: 'notes', header: 'Notes', render: (r) => <span className="max-w-[200px] truncate block">{r.notes || '—'}</span> },
+    { key: 'paymentMethod', header: 'Method', hideOnMobile: true, render: (r) => getPaymentMethodLabel(r.paymentMethod) },
+    { key: 'notes', header: 'Notes', hideOnMobile: true, render: (r) => <span className="max-w-[200px] truncate block">{r.notes || '—'}</span> },
   ];
 
   return (
