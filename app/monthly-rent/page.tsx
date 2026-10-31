@@ -115,22 +115,21 @@ export default function MonthlyRentPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap items-end gap-3">
         <div className="w-40"><Select label="Month" options={monthOptions} value={filterMonth} onChange={(e) => { setFilterMonth(e.target.value); setPage(1); }} /></div>
         <div className="w-28"><Select label="Year" options={yearOptions} value={filterYear} onChange={(e) => { setFilterYear(e.target.value); setPage(1); }} /></div>
-        <div className="flex items-end gap-2">
-          <FilterPills
-            options={[
-              { value: '', label: 'All' },
-              { value: 'paid', label: 'Paid' },
-              { value: 'partial', label: 'Partial' },
-              { value: 'unpaid', label: 'Unpaid' },
-              { value: 'overdue', label: 'Overdue' },
-            ]}
-            value={statusFilter}
-            onChange={(v) => { setStatusFilter(v); setPage(1); }}
-          />
-        </div>
+        <FilterPills
+          label="Status"
+          options={[
+            { value: '', label: 'All' },
+            { value: 'paid', label: 'Paid' },
+            { value: 'partial', label: 'Partial' },
+            { value: 'unpaid', label: 'Unpaid' },
+            { value: 'overdue', label: 'Overdue' },
+          ]}
+          value={statusFilter}
+          onChange={(v) => { setStatusFilter(v); setPage(1); }}
+        />
       </div>
 
       <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">

@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Register',
 };
+export const instant = false;
 
 export default function RegisterLayout({
   children,

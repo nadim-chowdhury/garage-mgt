@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useGetVehiclesQuery, useCreateVehicleMutation } from '@/store/api/vehicleApi';
 import { useGetTenantsQuery } from '@/store/api/tenantApi';
-import { Button, Badge, Table, Pagination, Input, Modal } from '@/components/ui';
+import { Button, Badge, Table, Pagination, Input, Modal, SearchInput } from '@/components/ui';
 import { useAuth } from '@/components/providers/AuthProvider';
 import type { Column } from '@/components/ui/Table';
 import type { Vehicle, CreateVehicleInput } from '@/types';
@@ -91,12 +91,12 @@ export default function VehiclesPage() {
         {canWrite && <Button onClick={() => setShowAddModal(true)}>+ Add Vehicle</Button>}
       </div>
 
-      <div className="sm:w-72">
-        <Input
+      <div className="sm:w-80">
+        <SearchInput
           placeholder="Search by number, owner, driver..."
           value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
+          onChange={(val) => {
+            setSearch(val);
             setPage(1);
           }}
         />

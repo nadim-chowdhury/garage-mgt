@@ -4,10 +4,12 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/components/providers/AuthProvider';
 import Badge from '@/components/ui/Badge';
 import { cn } from '@/lib/utils';
-import { Menu, LogOut } from 'lucide-react';
+import { Menu, LogOut, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 
 interface HeaderProps {
   onMenuToggle: () => void;
+  collapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
 const roleBadgeVariant = {
@@ -22,7 +24,11 @@ const roleLabel = {
   viewer: 'Viewer',
 } as const;
 
-export default function Header({ onMenuToggle }: HeaderProps) {
+export default function Header({
+  onMenuToggle,
+  collapsed = false,
+  onToggleCollapse,
+}: HeaderProps) {
   const { userName, garageName, role, logout } = useAuth();
   const [currentDate, setCurrentDate] = useState('');
 
@@ -38,7 +44,7 @@ export default function Header({ onMenuToggle }: HeaderProps) {
   }, []);
 
   return (
-    <header className="sticky top-0 z-20 flex h-16 items-center gap-4 border-b border-slate-200 bg-white/95 backdrop-blur-sm px-4 lg:px-6">
+    <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-slate-200 bg-white/95 backdrop-blur-sm px-4 lg:px-6">
       {/* Mobile menu toggle */}
       <button
         onClick={onMenuToggle}
@@ -48,8 +54,24 @@ export default function Header({ onMenuToggle }: HeaderProps) {
         <Menu className="h-5 w-5" />
       </button>
 
-      {/* Garage name - mobile */}
-      <span className="text-sm font-semibold text-slate-700 lg:hidden truncate">
+      {/* Desktop collapse toggle */}
+      {onToggleCollapse && (
+        <button
+          onClick={onToggleCollapse}
+          className="hidden lg:flex rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-colors"
+          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        >
+          {collapsed ? (
+            <PanelLeftOpen className="h-5 w-5" />
+          ) : (
+            <PanelLeftClose className="h-5 w-5" />
+          )}
+        </button>
+      )}
+
+      {/* Garage name */}
+      <span className={cn('text-sm font-semibold text-slate-700 truncate', !collapsed && 'lg:hidden')}>
         {garageName}
       </span>
 

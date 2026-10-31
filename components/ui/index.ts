@@ -16,4 +16,5 @@ export { default as ToastProvider, useToast } from './Toast';
 export { default as ConfirmDialog } from './ConfirmDialog';
 export { default as PrintButton } from './PrintButton';
 export { default as FilterPills } from './FilterPills';
+export { default as SearchInput } from './SearchInput';
 

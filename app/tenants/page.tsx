@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useGetTenantsQuery, useCreateTenantMutation } from '@/store/api/tenantApi';
-import { Button, Badge, Table, Pagination, Input, FilterPills, Modal } from '@/components/ui';
+import { Button, Badge, Table, Pagination, Input, FilterPills, Modal, SearchInput } from '@/components/ui';
 import { useToast } from '@/components/ui/Toast';
 import { useAuth } from '@/components/providers/AuthProvider';
 import type { Column } from '@/components/ui/Table';
@@ -95,13 +95,13 @@ export default function TenantsPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <div className="sm:w-72">
-          <Input
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="sm:w-80">
+          <SearchInput
             placeholder="Search by name or mobile..."
             value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
+            onChange={(val) => {
+              setSearch(val);
               setPage(1);
             }}
           />

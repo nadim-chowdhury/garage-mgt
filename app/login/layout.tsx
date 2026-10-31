@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Login',
 };
+export const instant = false;
 
 export default function LoginLayout({
   children,
