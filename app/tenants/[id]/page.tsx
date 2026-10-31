@@ -115,7 +115,7 @@ function TenantDetailContent({
           <p className="mt-1 text-sm text-slate-500">{tenant.mobile}</p>
         </div>
         <div className="flex gap-2">
-          {canWrite && (
+          {(canWrite || isAdmin) && (
             <Link href={`/tenants/${id}/edit`}>
               <Button variant="secondary">Edit</Button>
             </Link>

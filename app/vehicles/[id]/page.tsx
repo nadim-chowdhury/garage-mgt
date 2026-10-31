@@ -78,7 +78,7 @@ function VehicleDetailContent({
           </p>
         </div>
         <div className="flex gap-2">
-          {canWrite && (
+          {(canWrite || isAdmin) && (
             <Link href={`/vehicles/${id}/edit`}>
               <Button variant="secondary">Edit</Button>
             </Link>
