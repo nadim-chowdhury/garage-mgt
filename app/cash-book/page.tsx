@@ -177,11 +177,11 @@ export default function CashBookPage() {
         {/* Date Navigator + Action Buttons */}
         <div className="flex flex-wrap items-center gap-2">
           {/* Day Navigation */}
-          <div className="flex items-center rounded-lg border border-slate-300 bg-white p-0.5 shadow-sm">
+          <div className="inline-flex items-center h-[38px] rounded-lg border border-slate-300 bg-white">
             <button
               type="button"
               onClick={handlePrevDay}
-              className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+              className="inline-flex h-full items-center justify-center px-2.5 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-l-lg transition-colors cursor-pointer"
               title="Previous Day"
               aria-label="Previous Day"
             >
@@ -190,14 +190,14 @@ export default function CashBookPage() {
             <button
               type="button"
               onClick={handleToday}
-              className="px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-100 rounded-md transition-colors"
+              className="inline-flex h-full items-center justify-center px-3 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-indigo-600 border-x border-slate-200 transition-colors cursor-pointer"
             >
               Today
             </button>
             <button
               type="button"
               onClick={handleNextDay}
-              className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+              className="inline-flex h-full items-center justify-center px-2.5 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-r-lg transition-colors cursor-pointer"
               title="Next Day"
               aria-label="Next Day"
             >
