@@ -71,7 +71,7 @@ export default function DuesPage() {
       </div>
 
       {/* Summary */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 min-w-0">
         <StatCard title="Monthly Rent Dues" value={formatCurrency(totalRentDue)} icon={<Home className="h-5 w-5" />} color="danger" />
         <StatCard title="Daily Entry Dues" value={formatCurrency(totalDailyDue)} icon={<Car className="h-5 w-5" />} color="warning" />
         <StatCard title="Total Dues" value={formatCurrency(totalRentDue + totalDailyDue)} icon={<ClipboardList className="h-5 w-5" />} color="danger" />

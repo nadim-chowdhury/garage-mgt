@@ -57,7 +57,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         {/* Main area — animated padding to account for fixed sidebar */}
         <div
           className={cn(
-            'transition-[padding] duration-300 ease-in-out',
+            'transition-[padding] duration-300 ease-in-out min-w-0 w-full overflow-x-hidden',
             sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-64',
           )}
         >
@@ -66,7 +66,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             collapsed={sidebarCollapsed}
             onToggleCollapse={handleToggleCollapse}
           />
-          <main className="p-4 lg:p-6">{children}</main>
+          <main className="p-4 lg:p-6 min-w-0 max-w-full">{children}</main>
         </div>
       </div>
     </AuthProvider>

@@ -135,12 +135,12 @@ export default function CashBookPage() {
   const incomeColumns: Column<IncomeEntry>[] = [
     { key: 'category', header: 'Category', render: (r) => getIncomeCategoryLabel(r.category) },
     { key: 'amount', header: 'Amount', render: (r) => <span className="font-medium text-emerald-600">{formatCurrency(r.amount)}</span> },
-    { key: 'notes', header: 'Notes', render: (r) => r.notes || '—' },
+    { key: 'notes', header: 'Notes', wrap: true, render: (r) => r.notes || '—' },
   ];
 
   const expenseColumns: Column<ExpenseEntry>[] = [
     { key: 'category', header: 'Category', render: (r) => getExpenseCategoryLabel(r.category) },
-    { key: 'description', header: 'Description', render: (r) => r.description || '—' },
+    { key: 'description', header: 'Description', wrap: true, render: (r) => r.description || '—' },
     { key: 'amount', header: 'Amount', render: (r) => <span className="font-medium text-red-600">{formatCurrency(r.amount)}</span> },
   ];
 
@@ -252,7 +252,7 @@ export default function CashBookPage() {
       </div>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 min-w-0">
         <StatCard
           title="Opening Balance"
           value={formatCurrency(cashBook?.openingBalance ?? 0)}
@@ -310,7 +310,7 @@ export default function CashBookPage() {
       )}
 
       {/* Income & Expense breakdown */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 min-w-0">
         <Card title="Income Entries" noPadding>
           <Table
             columns={incomeColumns}

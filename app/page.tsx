@@ -56,7 +56,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Top stats */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 min-w-0">
         <StatCard title="Today's Income" value={formatCurrency(stats?.todayIncome ?? 0)} icon={<Wallet className="h-5 w-5" />} color="success" />
         <StatCard title="Today's Expenses" value={formatCurrency(stats?.todayExpense ?? 0)} icon={<CreditCard className="h-5 w-5" />} color="danger" />
         <StatCard title="Total Dues" value={formatCurrency(stats?.totalDues ?? 0)} icon={<ClipboardList className="h-5 w-5" />} color="warning" />
@@ -65,7 +65,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Monthly summary */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 min-w-0">
         <StatCard title="Monthly Income" value={formatCurrency(stats?.monthlyIncome ?? 0)} icon={<TrendingUp className="h-5 w-5" />} color="success" />
         <StatCard title="Monthly Expenses" value={formatCurrency(stats?.monthlyExpense ?? 0)} icon={<TrendingDown className="h-5 w-5" />} color="danger" />
         <StatCard title="Overdue Rents" value={stats?.overdueRents ?? 0} icon={<AlertTriangle className="h-5 w-5" />} color="warning" />
@@ -82,7 +82,7 @@ export default function DashboardPage() {
       )}
 
       {/* Recent entries & overdue rents */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 min-w-0">
         <Card title="Recent Daily Entries" noPadding>
           <Table columns={entryColumns} data={recentEntries} emptyMessage="No entries yet" emptyIcon={<Car className="h-6 w-6" />} keyExtractor={(r) => r.id} />
         </Card>

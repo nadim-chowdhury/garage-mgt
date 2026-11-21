@@ -11,6 +11,8 @@ export interface Column<T> {
   className?: string;
   /** Hide this column on screens smaller than `sm` (640px) */
   hideOnMobile?: boolean;
+  /** Allow cell contents to wrap onto multiple lines instead of single-line nowrap */
+  wrap?: boolean;
   render?: (row: T) => ReactNode;
 }
 
@@ -53,15 +55,15 @@ export default function Table<T>({
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-slate-200">
+    <div className="w-full min-w-0 overflow-x-auto">
+      <table className="w-full min-w-full divide-y divide-slate-200 text-left">
         <thead>
           <tr className="bg-slate-50/80">
             {columns.map((col) => (
               <th
                 key={col.key}
                 className={cn(
-                  'px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500',
+                  'px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 whitespace-nowrap',
                   col.hideOnMobile && 'hidden sm:table-cell',
                   col.className,
                 )}
@@ -82,20 +84,29 @@ export default function Table<T>({
                 !onRowClick && 'hover:bg-slate-50/60',
               )}
             >
-              {columns.map((col) => (
-                <td
-                  key={col.key}
-                  className={cn(
-                    'px-4 py-3 text-sm text-slate-700 whitespace-nowrap',
-                    col.hideOnMobile && 'hidden sm:table-cell',
-                    col.className,
-                  )}
-                >
-                  {col.render
-                    ? col.render(row)
-                    : String((row as Record<string, unknown>)[col.key] ?? '—')}
-                </td>
-              ))}
+              {columns.map((col) => {
+                const isWrap =
+                  col.wrap ||
+                  col.className?.includes('whitespace-normal') ||
+                  col.className?.includes('break-');
+
+                return (
+                  <td
+                    key={col.key}
+                    className={cn(
+                      'px-4 py-3 text-sm text-slate-700 align-middle',
+                      !isWrap && 'whitespace-nowrap',
+                      isWrap && 'break-words max-w-xs',
+                      col.hideOnMobile && 'hidden sm:table-cell',
+                      col.className,
+                    )}
+                  >
+                    {col.render
+                      ? col.render(row)
+                      : String((row as Record<string, unknown>)[col.key] ?? '—')}
+                  </td>
+                );
+              })}
             </tr>
           ))}
         </tbody>

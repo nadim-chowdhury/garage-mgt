@@ -36,19 +36,26 @@ export default function StatCard({
   return (
     <div
       className={cn(
-        'rounded-xl border border-slate-200 bg-white shadow-sm border-l-4 p-5',
+        'rounded-xl border border-slate-200 bg-white shadow-sm border-l-4 p-5 min-w-0 w-full overflow-hidden',
         colorStyles[color],
         className,
       )}
     >
-      <div className="flex items-start justify-between">
-        <div className="space-y-2">
-          <p className="text-sm font-medium text-slate-500">{title}</p>
-          <p className="text-2xl font-bold text-slate-900">{value}</p>
+      <div className="flex items-start justify-between gap-3 min-w-0">
+        <div className="space-y-1.5 min-w-0 flex-1">
+          <p className="text-sm font-medium text-slate-500 truncate" title={title}>
+            {title}
+          </p>
+          <p
+            className="text-2xl font-bold text-slate-900 truncate tracking-tight"
+            title={typeof value === 'string' || typeof value === 'number' ? String(value) : undefined}
+          >
+            {value}
+          </p>
           {trend && (
             <p
               className={cn(
-                'text-xs font-medium flex items-center gap-1',
+                'text-xs font-medium flex items-center gap-1 truncate',
                 trend.direction === 'up' && 'text-emerald-600',
                 trend.direction === 'down' && 'text-red-600',
                 trend.direction === 'neutral' && 'text-slate-500',
@@ -57,14 +64,14 @@ export default function StatCard({
               {trend.direction === 'up' && '↑'}
               {trend.direction === 'down' && '↓'}
               {trend.direction === 'neutral' && '→'}
-              {trend.percentage}%
+              <span>{trend.percentage}%</span>
             </p>
           )}
         </div>
         {icon && (
           <div
             className={cn(
-              'flex h-10 w-10 items-center justify-center rounded-lg text-lg',
+              'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-lg',
               iconBg[color],
             )}
           >

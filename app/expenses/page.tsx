@@ -178,7 +178,7 @@ export default function ExpensesPage() {
   const columns: Column<ExpenseEntry>[] = [
     { key: 'expenseDate', header: 'Date', render: (r) => formatDate(r.expenseDate) },
     { key: 'category', header: 'Category', render: (r) => categoryBadge(r.category) },
-    { key: 'description', header: 'Description', hideOnMobile: true, render: (r) => r.description || '—' },
+    { key: 'description', header: 'Description', hideOnMobile: true, wrap: true, render: (r) => r.description || '—' },
     {
       key: 'amount',
       header: 'Amount',
@@ -194,7 +194,8 @@ export default function ExpensesPage() {
       key: 'notes',
       header: 'Notes',
       hideOnMobile: true,
-      render: (r) => <span className="max-w-[200px] truncate block">{r.notes || '—'}</span>,
+      wrap: true,
+      render: (r) => r.notes || '—',
     },
     ...(canWrite
       ? [

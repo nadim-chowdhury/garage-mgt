@@ -212,7 +212,8 @@ export default function IncomePage() {
       key: 'notes',
       header: 'Notes',
       hideOnMobile: true,
-      render: (r) => <span className="max-w-[200px] truncate block">{r.notes || '—'}</span>,
+      wrap: true,
+      render: (r) => r.notes || '—',
     },
     ...(canWrite
       ? [

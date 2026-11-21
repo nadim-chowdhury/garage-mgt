@@ -124,6 +124,7 @@ export default function AuditLogsPage() {
     {
       key: 'details',
       header: 'Details & Changes',
+      wrap: true,
       render: (r) => (
         <span className="text-sm text-slate-700">{r.details || '—'}</span>
       ),
