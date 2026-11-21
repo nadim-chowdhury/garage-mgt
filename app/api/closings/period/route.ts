@@ -68,7 +68,7 @@ export const POST = withAdminAuth(
       `;
       if (existing.length > 0) {
         return NextResponse.json(
-          { success: false, error: `${type === 'month' ? `${month}/${year} মাসের` : `${year} সালের`} হিসাব ইতিমধ্যে ক্লোজ করা হয়েছে।` },
+          { success: false, error: `Period closing for ${type === 'month' ? `${month}/${year}` : `${year}`} has already been completed.` },
           { status: 400 },
         );
       }
@@ -145,7 +145,7 @@ export const POST = withAdminAuth(
       return NextResponse.json({
         success: true,
         data: rows[0],
-        message: `${type === 'month' ? `${month}/${year} মাসের` : `${year} সালের`} হিসাব সফলভাবে সংরক্ষণ ও ক্লোজ করা হয়েছে।`,
+        message: `Period closing completed successfully for ${type === 'month' ? `${month}/${year}` : `${year}`}.`,
       }, { status: 201 });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Period closing failed';

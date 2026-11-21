@@ -81,7 +81,7 @@ export default function CashBookPage() {
         throw new Error(result.error || 'Day end failed');
       }
 
-      success(result.message || 'ডে-এন্ড সফলভাবে সম্পন্ন হয়েছে।');
+      success(result.message || 'Day end closing completed successfully.');
       setShowDayEndModal(false);
       setDayClosing(result.data);
       refetch();
@@ -90,7 +90,7 @@ export default function CashBookPage() {
         setDate(result.nextDate);
       }
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'ডে-এন্ড সম্পন্ন করতে ব্যর্থ হয়েছে।';
+      const message = err instanceof Error ? err.message : 'Failed to complete day end closing.';
       showError(message);
     } finally {
       setIsSubmittingClose(false);
@@ -117,11 +117,11 @@ export default function CashBookPage() {
         throw new Error(result.error || 'Month end failed');
       }
 
-      success(result.message || 'মাসিক হিসাব সফলভাবে সংরক্ষিত ও ক্লোজ করা হয়েছে।');
+      success(result.message || 'Month end closing completed successfully.');
       setShowMonthEndModal(false);
       refetch();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'মাসিক ক্লোজিং সম্পন্ন করতে সমস্যা হয়েছে।';
+      const message = err instanceof Error ? err.message : 'Failed to complete month end closing.';
       showError(message);
     } finally {
       setIsSubmittingClose(false);
@@ -170,7 +170,7 @@ export default function CashBookPage() {
             )}
           </div>
           <p className="mt-1 text-sm text-slate-500">
-            দৈনিক নগদ হিসাব — {formatDate(date)}
+            Daily cash and closing records — {formatDate(date)}
           </p>
         </div>
 
@@ -242,7 +242,7 @@ export default function CashBookPage() {
                 setShowMonthEndModal(true);
               }}
               className="gap-1.5 text-slate-700"
-              title="মাসিক হিসাব সংরক্ষণ ও ক্লোজ করুন"
+              title="Archive and close monthly accounts"
             >
               <Lock className="h-4 w-4 text-slate-400" />
               Month End
@@ -286,24 +286,24 @@ export default function CashBookPage() {
             <div className="flex items-center gap-2">
               <Lock className="h-4 w-4 text-emerald-600 shrink-0" />
               <p className="font-semibold text-emerald-900">
-                {formatDate(date)} তারিখের ডে-এন্ড ক্লোজিং সম্পন্ন হয়েছে
+                Day End Closing completed for {formatDate(date)}
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-4 text-xs text-emerald-800">
-              <span>ক্যাশ ব্যালেন্স: <strong>{formatCurrency(dayClosing.closingBalance)}</strong></span>
+              <span>Closing Balance: <strong>{formatCurrency(dayClosing.closingBalance)}</strong></span>
               {dayClosing.actualCashCounted !== null && (
-                <span>গুনে পাওয়া ক্যাশ: <strong>{formatCurrency(dayClosing.actualCashCounted)}</strong></span>
+                <span>Actual Cash Counted: <strong>{formatCurrency(dayClosing.actualCashCounted)}</strong></span>
               )}
               {Number(dayClosing.cashDifference) !== 0 && (
                 <span className={Number(dayClosing.cashDifference) > 0 ? 'text-blue-700' : 'text-red-700'}>
-                  {Number(dayClosing.cashDifference) > 0 ? 'উদ্বৃত্ত:' : 'ঘাটতি:'} <strong>{formatCurrency(Math.abs(Number(dayClosing.cashDifference)))}</strong>
+                  {Number(dayClosing.cashDifference) > 0 ? 'Surplus:' : 'Shortage:'} <strong>{formatCurrency(Math.abs(Number(dayClosing.cashDifference)))}</strong>
                 </span>
               )}
             </div>
           </div>
           {dayClosing.notes && (
             <p className="mt-2 text-xs text-emerald-700 border-t border-emerald-200/60 pt-2">
-              মন্তব্য: {dayClosing.notes}
+              Notes: {dayClosing.notes}
             </p>
           )}
         </div>
@@ -341,31 +341,31 @@ export default function CashBookPage() {
       >
         <div className="space-y-4">
           <p className="text-xs text-slate-500">
-            আজকের দিনের সমস্ত নগদ লেনদেন বন্ধ করে দিনশেষে হাতে থাকা প্রকৃত ক্যাশ লিপিবদ্ধ করুন এবং পরবর্তী কার্যদিবসে অগ্রসর হন।
+            Close today&apos;s cash book, record actual cash on hand, and advance to the next working day.
           </p>
 
           <div className="rounded-lg bg-slate-50 p-3 space-y-2 text-sm border border-slate-200">
             <div className="flex justify-between">
-              <span className="text-slate-500">প্রারম্ভিক ব্যালেন্স (Opening):</span>
+              <span className="text-slate-500">Opening Balance:</span>
               <span className="font-medium text-slate-900">{formatCurrency(cashBook?.openingBalance ?? 0)}</span>
             </div>
             <div className="flex justify-between text-emerald-600">
-              <span>মোট নগদ আয় (Cash In):</span>
+              <span>Total Cash In (Income):</span>
               <span className="font-medium">+{formatCurrency(cashBook?.totalIncome ?? 0)}</span>
             </div>
             <div className="flex justify-between text-red-600">
-              <span>মোট নগদ খরচ (Cash Out):</span>
+              <span>Total Cash Out (Expenses):</span>
               <span className="font-medium">-{formatCurrency(cashBook?.totalExpense ?? 0)}</span>
             </div>
             <div className="border-t border-slate-200 pt-2 flex justify-between font-bold text-slate-900">
-              <span>ক্যাশে থাকার কথা (Expected):</span>
+              <span>Expected Closing Balance:</span>
               <span className="text-indigo-600">{formatCurrency(expectedClosing)}</span>
             </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">
-              হাতে গুনে পাওয়া প্রকৃত নগদ টাকা (Actual Cash Counted)
+              Actual Cash Counted
             </label>
             <Input
               type="number"
@@ -373,29 +373,29 @@ export default function CashBookPage() {
               step="0.01"
               value={actualCash}
               onChange={(e) => setActualCash(e.target.value)}
-              placeholder={String(expectedClosing)}
+              placeholder="Enter actual cash counted"
             />
           </div>
 
           {actualCash !== '' && cashDiff !== 0 && (
             <div className={`rounded-lg p-2.5 text-xs font-medium ${cashDiff > 0 ? 'bg-blue-50 text-blue-800 border border-blue-200' : 'bg-red-50 text-red-800 border border-red-200'}`}>
               {cashDiff > 0 ? (
-                <span>ক্যাশ উদ্বৃত্ত (Surplus): +{formatCurrency(cashDiff)}</span>
+                <span>Cash Surplus: +{formatCurrency(cashDiff)}</span>
               ) : (
-                <span>ক্যাশ ঘাটতি (Shortage): -{formatCurrency(Math.abs(cashDiff))}</span>
+                <span>Cash Shortage: -{formatCurrency(Math.abs(cashDiff))}</span>
               )}
             </div>
           )}
 
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">
-              ক্লোজিং মন্তব্য (Notes)
+              Closing Notes
             </label>
             <Textarea
               rows={2}
               value={closingNotes}
               onChange={(e) => setClosingNotes(e.target.value)}
-              placeholder="দিনশেষের কোনো বিশেষ মন্তব্য বা অমিলের বিবরণ থাকলে লিখুন..."
+              placeholder="Enter closing notes or discrepancy explanations (optional)..."
             />
           </div>
 
@@ -406,7 +406,7 @@ export default function CashBookPage() {
               onClick={() => setShowDayEndModal(false)}
               disabled={isSubmittingClose}
             >
-              বাতিল
+              Cancel
             </Button>
             <Button
               type="button"
@@ -414,7 +414,7 @@ export default function CashBookPage() {
               onClick={handleExecuteDayEnd}
               loading={isSubmittingClose}
             >
-              দিন সমাপ্ত করুন ও পরবর্তী দিনে যান
+              Complete Day End
             </Button>
           </div>
         </div>
@@ -424,29 +424,29 @@ export default function CashBookPage() {
       <Modal
         isOpen={showMonthEndModal}
         onClose={() => setShowMonthEndModal(false)}
-        title="Month End Closing (মাসিক হিসাব ক্লোজিং)"
+        title="Month End Closing"
         size="md"
       >
         <div className="space-y-4 text-sm text-slate-600">
           <p>
-            চলতি মাসের সমস্ত আয়-ব্যয় এবং ভাড়ার হিসাব চূড়ান্ত করে মাস সমাপ্তি রেকর্ড করা হবে।
+            Finalize and archive all income, expense, and rent accounts for this month.
           </p>
 
           <div className="rounded-lg bg-indigo-50/60 border border-indigo-100 p-3 space-y-1.5 text-xs text-indigo-900">
-            <p className="font-semibold text-sm text-indigo-950">মাসের সারসংক্ষেপ:</p>
-            <p>• মাসের হিসাব লক হবে এবং স্থায়ী আর্কাইভে সংরক্ষিত থাকবে।</p>
-            <p>• দিনশেষের নগদ তহবিল পরবর্তী মাসের ওপেনিং হিসেবে স্বয়ংক্রিয়ভাবে সংরক্ষিত থাকবে।</p>
+            <p className="font-semibold text-sm text-indigo-950">Closing Summary:</p>
+            <p>• Current month accounts will be locked and permanently archived.</p>
+            <p>• Final closing balance will automatically carry forward as next month&apos;s opening balance.</p>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">
-              মাসিক ক্লোজিং মন্তব্য (Notes)
+              Monthly Closing Notes
             </label>
             <Textarea
               rows={2}
               value={closingNotes}
               onChange={(e) => setClosingNotes(e.target.value)}
-              placeholder="মাসিক হিসাব সম্পর্কিত কোনো মন্তব্য থাকলে লিখুন..."
+              placeholder="Enter monthly closing notes (optional)..."
             />
           </div>
 
@@ -457,7 +457,7 @@ export default function CashBookPage() {
               onClick={() => setShowMonthEndModal(false)}
               disabled={isSubmittingClose}
             >
-              বাতিল
+              Cancel
             </Button>
             <Button
               type="button"
@@ -465,7 +465,7 @@ export default function CashBookPage() {
               onClick={handleExecuteMonthEnd}
               loading={isSubmittingClose}
             >
-              মাস সমাপ্তি নিশ্চিত করুন
+              Confirm Month End
             </Button>
           </div>
         </div>

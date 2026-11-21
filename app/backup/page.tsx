@@ -33,9 +33,9 @@ export default function BackupPage() {
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-      success('সম্পূর্ণ ব্যাকআপ ফাইল সফলভাবে ডাউনলোড হয়েছে।');
+      success('Full backup file downloaded successfully.');
     } catch {
-      showError('ব্যাকআপ ডাউনলোড করতে ব্যর্থ হয়েছে।');
+      showError('Failed to download backup file.');
     } finally {
       setIsExporting(false);
     }
@@ -46,7 +46,7 @@ export default function BackupPage() {
     if (!file) return;
 
     if (!file.name.endsWith('.json')) {
-      showError('অনুগ্রহ করে একটি বৈধ .json ব্যাকআপ ফাইল নির্বাচন করুন।');
+      showError('Please select a valid .json backup file.');
       return;
     }
 
@@ -60,7 +60,7 @@ export default function BackupPage() {
         setSelectedFile(file);
         setRestoreJson(parsed);
       } catch {
-        showError('নির্বাচিত ফাইলটির ফরম্যাট সঠিক নয়।');
+        showError('Invalid backup file format.');
         setSelectedFile(null);
         setRestoreJson(null);
       }
@@ -81,12 +81,12 @@ export default function BackupPage() {
       if (!res.ok || !data.success) {
         throw new Error(data.error || 'Restore failed');
       }
-      success('ব্যাকআপ থেকে ডাটা সফলভাবে রিস্টোর হয়েছে।');
+      success('Data restored successfully from backup.');
       setSelectedFile(null);
       setRestoreJson(null);
       setShowConfirmRestore(false);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'রিস্টোর করতে সমস্যা হয়েছে।';
+      const message = err instanceof Error ? err.message : 'Failed to restore backup.';
       showError(message);
     } finally {
       setIsRestoring(false);
@@ -139,15 +139,15 @@ export default function BackupPage() {
       {/* Actions Grid */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Export Card */}
-        <Card title="পূর্ণাঙ্গ ডাটা ব্যাকআপ ডাউনলোড">
+        <Card title="Download Database Backup">
           <div className="space-y-4 text-sm text-slate-600">
             <p>
-              এই বোতামে ক্লিক করলে আপনার গ্যারেজের সমস্ত ভাড়াটিয়া, গাড়ি, দৈনিক এন্ট্রি, মাসিক ভাড়া, আয়, ব্যয়,
-              ক্যাশ বুক এবং ক্লোজিং রেকর্ডের একটি সম্পূর্ণ এনক্রিপ্টেড JSON ব্যাকআপ ফাইল আপনার ডিভাইসে ডাউনলোড হবে।
+              Download a complete JSON backup file containing all tenants, vehicles, daily entries,
+              monthly rent, income, expenses, cash book, and closing records.
             </p>
             <div className="rounded-lg bg-slate-50 p-3 text-xs text-slate-500 space-y-1">
-              <p>• নিয়মিত ব্যাকআপ কম্পিউটারে বা ক্লাউড ড্রাইভে সংরক্ষণ করা নিরাপদ।</p>
-              <p>• কোনো কারণে ইন্টারনেট বা ডিভাইস পরিবর্তিত হলেও সহজেই রিস্টোর করতে পারবেন।</p>
+              <p>• Recommended to download backups periodically to secure your business records.</p>
+              <p>• Easily restore your data in case of device changes or migrations.</p>
             </div>
             <Button
               type="button"
@@ -162,17 +162,17 @@ export default function BackupPage() {
         </Card>
 
         {/* Restore Card */}
-        <Card title="ব্যাকআপ থেকে ডাটা রিস্টোর">
+        <Card title="Restore Data from Backup">
           <div className="space-y-4 text-sm text-slate-600">
             <p>
-              পূর্বে ডাউনলোডকৃত ব্যাকআপ ফাইল নির্বাচন করে সমস্ত পূর্ববর্তী রেকর্ড পুনরায় রিস্টোর করতে পারেন।
+              Select a previously downloaded backup JSON file to restore and synchronize database records.
             </p>
 
             <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 flex items-start gap-2">
               <AlertTriangle className="h-4 w-4 shrink-0 text-amber-600 mt-0.5" />
               <div>
-                <p className="font-semibold">সতর্কতা:</p>
-                <p>রিস্টোর করার আগে বর্তমান তথ্যের একটি ব্যাকআপ কপি ডাউনলোড করে রাখা জরুরি।</p>
+                <p className="font-semibold">Important:</p>
+                <p>It is recommended to download a fresh backup copy before performing a data restore.</p>
               </div>
             </div>
 
@@ -193,13 +193,13 @@ export default function BackupPage() {
                       variant="primary"
                       onClick={() => setShowConfirmRestore(true)}
                     >
-                      <Upload className="h-3.5 w-3.5 mr-1" /> রিস্টোর শুরু করুন
+                      <Upload className="h-3.5 w-3.5 mr-1" /> Start Restore
                     </Button>
                   </div>
                 )}
               </div>
             ) : (
-              <p className="text-xs text-slate-400 italic">শুধুমাত্র অ্যাডমিন ইউজার ব্যাকআপ রিস্টোর করতে পারেন।</p>
+              <p className="text-xs text-slate-400 italic">Only Admin users have permission to restore database backups.</p>
             )}
           </div>
         </Card>
@@ -210,9 +210,9 @@ export default function BackupPage() {
         isOpen={showConfirmRestore}
         onClose={() => setShowConfirmRestore(false)}
         onConfirm={handleExecuteRestore}
-        title="ব্যাকআপ রিস্টোর নিশ্চিতকরণ"
-        message="আপনি কি নিশ্চিত যে এই ব্যাকআপ ফাইল থেকে ডাটা রিস্টোর করতে চান? এটি পূর্বের সংরক্ষিত রেকর্ডসমূহের সাথে ডাটা সিঙ্ক করবে।"
-        confirmText="হ্যাঁ, রিস্টোর করুন"
+        title="Confirm Data Restore"
+        message="Are you sure you want to restore data from this backup file? This will synchronize database records with the backup file."
+        confirmText="Yes, Restore Data"
         variant="primary"
         loading={isRestoring}
       />

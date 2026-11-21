@@ -48,7 +48,7 @@ export const POST = withWriteAuth(
       `;
       if (existing.length > 0) {
         return NextResponse.json(
-          { success: false, error: `${date} তারিখের ডে-এন্ড ইতিমধ্যে সম্পন্ন হয়েছে।` },
+          { success: false, error: `Day end closing for ${date} has already been completed.` },
           { status: 400 },
         );
       }
@@ -122,7 +122,7 @@ export const POST = withWriteAuth(
         success: true,
         data: rows[0],
         nextDate,
-        message: `${date} তারিখের ডে-এন্ড সফলভাবে সম্পন্ন হয়েছে। পরবর্তী কার্যদিবস: ${nextDate}`,
+        message: `Day end closing completed for ${date}. Next working day: ${nextDate}`,
       }, { status: 201 });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Day end closing failed';
