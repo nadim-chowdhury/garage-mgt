@@ -79,6 +79,42 @@ export const POST = withWriteAuth(async (request: NextRequest, { garageId, userI
 
     const rent = Number(rentAmount) || 0;
     const paid = Number(paidAmount) || 0;
+
+    // Duplicate & settled payment check (No Duplicate Entry)
+    const existing = await sql`
+      SELECT id, paid_amount AS "paidAmount", rent_amount AS "rentAmount", updated_at AS "updatedAt"
+      FROM rent_payments
+      WHERE garage_id = ${garageId} AND tenant_id = ${tenantId} AND rent_month = ${Number(rentMonth)} AND rent_year = ${Number(rentYear)}
+    `;
+    if (existing.length > 0) {
+      const rec = existing[0];
+      if (Number(rec.paidAmount) >= Number(rec.rentAmount) && paid > 0) {
+        return NextResponse.json(
+          { success: false, error: 'এই মাসের ভাড়া ইতিমধ্যে সম্পূর্ণ পরিশোধ করা হয়েছে। অতিরিক্ত এন্ট্রি গ্রহণ করা হবে না।' },
+          { status: 400 },
+        );
+      }
+      const secondsAgo = (Date.now() - new Date(rec.updatedAt).getTime()) / 1000;
+      if (secondsAgo < 10 && paid > 0) {
+        return NextResponse.json(
+          { success: false, error: 'একই পেমেন্ট ইতিমধ্যে রেকর্ড করা হয়েছে। ডুপ্লিকেট এন্ট্রি প্রতিরোধ করা হয়েছে।' },
+          { status: 409 },
+        );
+      }
+    }
+
+    if (receiptNumber) {
+      const existingReceipt = await sql`
+        SELECT id FROM income_entries WHERE garage_id = ${garageId} AND receipt_number = ${receiptNumber}
+      `;
+      if (existingReceipt.length > 0) {
+        return NextResponse.json(
+          { success: false, error: `এই রসিদ নম্বর (${receiptNumber}) ইতিমধ্যে ব্যবহৃত হয়েছে। অনুগ্রহ করে নতুন রসিদ নম্বর দিন।` },
+          { status: 409 },
+        );
+      }
+    }
+
     const due = Math.max(0, rent - paid);
     let paymentStatus = 'unpaid';
     if (paid >= rent && rent > 0) paymentStatus = 'paid';

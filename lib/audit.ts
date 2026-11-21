@@ -12,7 +12,10 @@ export interface LogAuditParams {
     | 'rent_payment'
     | 'income'
     | 'expense'
-    | 'user';
+    | 'user'
+    | 'daily_closing'
+    | 'period_closing'
+    | 'backup';
   entityId?: string;
   details?: string;
 }

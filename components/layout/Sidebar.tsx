@@ -19,6 +19,7 @@ import {
   ChevronRight,
   UserCog,
   History,
+  Database,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -52,6 +53,7 @@ const navigation: NavGroup[] = [
       { label: 'Tenants', href: '/tenants', icon: Users },
       { label: 'Vehicles', href: '/vehicles', icon: Truck },
       { label: 'Users', href: '/users', icon: UserCog },
+      { label: 'Backup & Restore', href: '/backup', icon: Database },
     ],
   },
   {

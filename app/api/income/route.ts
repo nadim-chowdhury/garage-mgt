@@ -67,6 +67,19 @@ export const POST = withWriteAuth(async (request: NextRequest, { garageId, userI
       return NextResponse.json({ success: false, error: 'Amount must be greater than 0' }, { status: 400 });
     }
 
+    // No Duplicate Entry check
+    if (receiptNumber) {
+      const existingReceipt = await sql`
+        SELECT id FROM income_entries WHERE garage_id = ${garageId} AND receipt_number = ${receiptNumber}
+      `;
+      if (existingReceipt.length > 0) {
+        return NextResponse.json(
+          { success: false, error: `এই রসিদ নম্বর (${receiptNumber}) ইতিমধ্যে অন্য একটি আদায়ে ব্যবহৃত হয়েছে।` },
+          { status: 409 },
+        );
+      }
+    }
+
     const rows = await sql`
       INSERT INTO income_entries
         (garage_id, tenant_id, vehicle_id, income_date, category, amount, payment_method, receipt_number, notes)

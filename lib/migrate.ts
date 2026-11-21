@@ -77,7 +77,7 @@ async function migrate() {
       address         TEXT          DEFAULT '',
       vehicle_type    VARCHAR(30)   NOT NULL DEFAULT 'other',
       monthly_rent    DECIMAL(12,2) NOT NULL DEFAULT 0 CHECK (monthly_rent >= 0),
-      rent_due_day    INT           NOT NULL DEFAULT 1  CHECK (rent_due_day BETWEEN 1 AND 28),
+      rent_due_day    INT           NOT NULL DEFAULT 1  CHECK (rent_due_day BETWEEN 1 AND 31),
       security_deposit DECIMAL(12,2) NOT NULL DEFAULT 0 CHECK (security_deposit >= 0),
       status          VARCHAR(10)   NOT NULL DEFAULT 'active' CHECK (status IN ('active','inactive')),
       notes           TEXT          DEFAULT '',

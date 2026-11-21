@@ -21,7 +21,7 @@ const statusOptions = [
   { value: 'inactive', label: 'Inactive' },
 ];
 
-const rentDueDayOptions = Array.from({ length: 28 }, (_, i) => ({
+const rentDueDayOptions = Array.from({ length: 31 }, (_, i) => ({
   value: String(i + 1),
   label: String(i + 1),
 }));

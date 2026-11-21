@@ -332,3 +332,64 @@ export interface UpdateUserInput {
   password?: string;
 }
 
+// --- Day & Period Closings ---
+
+export interface DailyClosing {
+  id: string;
+  garageId: string;
+  closingDate: string;
+  openingBalance: number;
+  totalIncome: number;
+  totalExpense: number;
+  closingBalance: number;
+  actualCashCounted: number | null;
+  cashDifference: number;
+  notes: string | null;
+  closedByUserId: string | null;
+  closedAt: string;
+  status: 'closed';
+}
+
+export interface CreateDailyClosingInput {
+  closingDate: string;
+  actualCashCounted?: number;
+  notes?: string;
+}
+
+export interface PeriodClosing {
+  id: string;
+  garageId: string;
+  closingType: 'month' | 'year';
+  periodMonth: number | null;
+  periodYear: number;
+  totalIncome: number;
+  totalExpense: number;
+  netProfit: number;
+  closingCashBalance: number;
+  notes: string | null;
+  closedByUserId: string | null;
+  closedAt: string;
+  status: 'closed';
+}
+
+export interface CreatePeriodClosingInput {
+  closingType: 'month' | 'year';
+  periodMonth?: number;
+  periodYear: number;
+  notes?: string;
+}
+
+export interface BackupData {
+  version: string;
+  exportedAt: string;
+  garage: Garage;
+  tenants: Tenant[];
+  vehicles: Vehicle[];
+  dailyEntries: DailyVehicleEntry[];
+  rentPayments: RentPayment[];
+  incomeEntries: IncomeEntry[];
+  expenseEntries: ExpenseEntry[];
+  dailyClosings: DailyClosing[];
+  periodClosings: PeriodClosing[];
+}
+
